@@ -1,0 +1,26 @@
+stateDiagram-v2
+    [*] --> PENDING : Task Created
+
+    PENDING --> IN_PROGRESS : Assigned / Opened
+
+    IN_PROGRESS --> COMPLETED : Decision Submitted (Callback Sent)
+
+    COMPLETED --> PENDING_REVIEW : Late External Data Arrived
+
+    PENDING_REVIEW --> COMPLETED : Verifier Re-confirms / Changes Decision (New Callback Sent)
+
+    COMPLETED --> [*]
+
+    note right of COMPLETED
+        outcome: APPROVED | RETURNED | REFERRED
+        reason: string (optional)
+        Webhook fires on EVERY entry.
+        Each entry creates an immutable audit event.
+    end note
+
+    note left of PENDING_REVIEW
+        Distinct from IN_PROGRESS.
+        Decision was already made & callback sent.
+        New data arrived post-decision.
+        Verifier must circle back to review.
+    end note
