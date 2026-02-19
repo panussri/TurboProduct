@@ -35,6 +35,13 @@ All tasks follow a universal lifecycle: `PENDING → IN_PROGRESS → COMPLETED �
     *   Verifiers mark each document as **Correct** or **Incorrect**.
     *   When "Incorrect" is selected, a pre-configured `error_message` is shown and a `remark` field is available for case-specific notes.
     *   The `rejection_reason` (pre-configured) is sent to the client in the callback.
+*   **Verification Result Persistence (Save-as-you-go)**:
+    *   When the verifier makes a decision on a document, the **entire verification result** is persisted to the database in a single save operation per document:
+        *   **Document-level decision**: Correct or Incorrect.
+        *   **Check item outcomes**: Each data item (correct/incorrect) and each policy item (pass/fail).
+        *   **Remarks**: Case-specific notes entered by the verifier (per check item or per document).
+    *   Each document save is independent — progress survives browser close. The verifier can save one document and move on to the next without submitting the entire task.
+    *   The pre-configured `rejection_reason` and `error_message` are associated with the result when a check item is marked incorrect.
 *   **Task-Level Outcomes (Verifier-Driven)**:
     *   **APPROVED**: All documents are correct.
     *   **RETURNED**: Any document is incorrect — sent back to task originator for correction.
