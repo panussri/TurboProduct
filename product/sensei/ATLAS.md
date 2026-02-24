@@ -1,9 +1,11 @@
 # ATLAS - Product Capabilities & Strategic Blueprint
 
 **Role**: `@ARCHITECT`
-**Purpose**: This document defines the **Capabilities ("What")** of the Sensei Service — the Branch Operations Orchestration Platform for field staff productivity and management.
+**Purpose**: This document defines the **Capabilities ("What")** of the Sensei Service — the Centralized Branch Worklist & Task Tracker for field staff productivity and management.
 
 > **Sensei (先生)** — The master who provides structure, guidance, and discipline. Sensei does not do the work — it orchestrates *how work is done* across branches, ensuring alignment with policy, visibility for leadership, and productivity for field staff.
+>
+> **Scope**: Sensei is a **centralized branch worklist**, not a universal workflow engine. Branch-native workflows (collection, renewal) use Sensei's Playbook Engine. Domain-specific workflows (loan underwriting, document verification) stay in their own systems but can **push tasks into Sensei** when they need branch action. Sensei tracks task execution and outcomes — it does not own or orchestrate upstream workflow logic.
 
 ---
 
@@ -119,21 +121,43 @@ Supervisors can **drag outcomes to different target steps** in the editor. The t
 
 ---
 
-## 2. Core Capability: Task Engine
+## 2. Core Capability: Task Engine (Centralized Branch Worklist)
 
-**Goal**: Translate playbook steps and business events into discrete, assignable tasks with lifecycle tracking, SLA enforcement, and outcome recording.
+**Goal**: Provide a unified task tracking system for branches — aggregating work from Sensei's own playbooks, external service requests, and supervisor-created tasks into a single worklist with lifecycle tracking, SLA enforcement, and outcome recording.
 
 ### Why It Exists (First Principles)
 
 *   **Accountability**: Every interaction with a customer must be recorded. Without a task record, there is no audit trail of attempts, outcomes, or compliance adherence.
 *   **Throughput Visibility**: Management cannot measure what is not tracked. Tasks provide the atomic unit of measurement for staff productivity.
 *   **Automation**: Tasks generated automatically from events and playbooks eliminate reliance on supervisors manually assigning work.
+*   **Unified Inbox**: Branch staff work across multiple products and processes. Without a centralized worklist, they must switch between systems. Sensei presents all branch work in one place regardless of which system originated it.
+
+### Architectural Position
+
+Sensei is a **task tracker, not a workflow orchestrator**. Domain-specific workflows (loan underwriting in Onigiri, document verification in Matcha) stay inside their own bounded contexts with their own state machines and business rules. When these systems need branch action, they push a task into Sensei. Sensei tracks execution and reports outcomes back.
+
+```
+  ┌────────────────┐       task event       ┌─────────────────────────────┐
+  │ Onigiri (LOS)  │ ─────────────────▶ │                             │
+  └────────────────┘                       │                             │
+                                       │    SENSEI                    │
+  ┌────────────────┐       task event       │    Centralized Branch        │
+  │ Matcha (Docs)  │ ─────────────────▶ │    Worklist                  │
+  └────────────────┘                       │                             │
+                                       │    📞 Calls (22)              │
+  ┌────────────────┐       task event       │    🏠 Visits (4)              │
+  │ Sensei's own   │ ─────────────────▶ │    📋 Admin (6)               │
+  │ Playbooks      │                       │    📦 External Requests (3)   │
+  └────────────────┘                       │                             │
+                          ◀────────── │  completion event            │
+                                       └─────────────────────────────┘
+```
 
 ### Task Lifecycle
 
 ```
   ┌──────────┐   assign   ┌──────────┐   start   ┌──────────┐   record    ┌──────────┐
-  │ CREATED  │ ─────────► │ ASSIGNED │ ────────► │ ACTIVE   │ ──────────► │ CLOSED   │
+  │ CREATED  │ ─────────▶ │ ASSIGNED │ ────────▶ │ ACTIVE   │ ──────────▶ │ CLOSED   │
   └──────────┘            └──────────┘           └──────────┘            └──────────┘
        │                       │                      │
        │                       │ reassign             │ escalate
@@ -150,16 +174,70 @@ Supervisors can **drag outcomes to different target steps** in the editor. The t
   └──────────┘
 ```
 
+### Task Sources
+
+Tasks enter the worklist from four distinct sources:
+
+| Source | How Tasks Are Created | Example |
+|--------|----------------------|---------|
+| `playbook_step` | Automatically by Sensei's Playbook Engine when a playbook is instantiated for a customer | Delinquency playbook generates "Call customer" task |
+| `event_rule` | Automatically by Sensei's event rules matching DaVinci/Core Banking events | `DPD > 30` event → Call task |
+| `manual` | Supervisor creates a one-off task in the UI | "Visit customer for special follow-up" |
+| `external` | **External service** pushes a task via event/API when it needs branch action | Onigiri needs docs collected; Matcha needs physical ID |
+
+### External Task Creation Contract
+
+When an external service needs branch action, it publishes a `TaskCreationRequest` event that Sensei consumes:
+
+```
+TaskCreationRequest {
+  customer_id        // DaVinci customer ID (required)
+  action_type        // call | visit | admin | review (required)
+  title              // Human-readable, e.g., "เก็บเอกสาร KYC" (required)
+  description        // Context for the CO (optional)
+  priority           // high | normal | low (default: normal)
+  sla_deadline       // ISO timestamp (optional)
+  source_system      // "onigiri" | "matcha" | etc. (required)
+  source_ref_id      // e.g., loan_application_id (required)
+  source_callback    // event topic for completion notification (optional)
+  metadata           // opaque JSON — Sensei stores but does not interpret (optional)
+}
+```
+
+Sensei creates a task from this event using the same lifecycle as any other task. The CO sees it in their worklist alongside playbook-generated tasks. **Sensei does not need domain knowledge** about the upstream workflow — it just presents the task and records the outcome.
+
+### Task Completion Feedback
+
+When a task is closed, Sensei publishes a `TaskCompleted` event:
+
+```
+TaskCompleted {
+  task_id             // Sensei task ID
+  customer_id         // DaVinci customer ID
+  action_type         // what was done
+  outcome             // typed outcome (e.g., PTP, Completed, Refused)
+  outcome_data        // structured data (e.g., PTP amount + date)
+  completed_by        // CO identifier
+  completed_at        // ISO timestamp
+  source_system       // original source (for routing)
+  source_ref_id       // original reference (for correlation)
+  source_callback     // echo back for routing
+  metadata            // echo back opaque metadata
+}
+```
+
+The originating system consumes this event and advances its own workflow accordingly. For example: Onigiri receives "docs collected" and moves the loan application to the next underwriting stage. **Sensei is not aware of what happens next** — it only reports that the task was done.
+
 ### Task Properties
 
-*   **Source**: `playbook_step`, `event_rule`, `manual` (supervisor-created)
+*   **Source**: `playbook_step`, `event_rule`, `manual`, `external`
 *   **Action Type**: `Call`, `Visit`, `Admin`, `Review`, `Notify`
-*   **Priority**: Derived from DPD bucket, playbook urgency, and SLA proximity
+*   **Priority**: Derived from DPD bucket, playbook urgency, SLA proximity, or external request
 *   **Outcome**: Typed per action (e.g., Call outcomes: `PTP`, `No Answer`, `Refused`, `Callback`, `Wrong Number`)
 *   **SLA**: Configurable deadline. Breached tasks surface in supervisor exception panel.
-*   **Linked Entities**: `customer_id` (DaVinci), `contract_id`, `playbook_id`, `playbook_step_id`
+*   **Linked Entities**: `customer_id` (DaVinci), `contract_id`, `playbook_id`, `playbook_step_id`, `source_system`, `source_ref_id`
 
-### Event-Driven Task Generation
+### Event-Driven Task Generation (Internal)
 
 *   **Event Rules**: System or branch-defined rules that create tasks from external events:
     *   `Delinquency > 30 DPD` → Create Call task from "Delinquency Recovery" playbook
@@ -173,6 +251,7 @@ Supervisors can **drag outcomes to different target steps** in the editor. The t
 *   **Override Playbook Step**: Skip or insert a step for a specific customer's playbook instance
 *   **Add Manual Task**: Create a one-off task not tied to any playbook
 *   **Bulk Operations**: Reassign all tasks from one CO to another (e.g., staff absence)
+*   **View External Context**: For `external` tasks, a link to the source system is provided for supervisor reference
 
 ---
 
@@ -292,14 +371,30 @@ Rapid-fire mode can be exited at any time to return to the standard one-by-one q
 
 **Goal**: Ensure all customer interactions comply with Thai debt collection regulations regarding contact frequency, timing, and methods — and verify that recorded actions actually occurred.
 
-### Rules Enforced
+### Compliance Ownership: DaVinci Emits, Consumers Interpret
 
-| Rule | Source | Enforcement |
-|------|--------|-------------|
-| Max contacts per debtor per day | Thai Debt Collection Act | Task auto-skipped if limit reached |
-| No contact outside business hours | Thai Debt Collection Act | Tasks not assignable outside hours |
-| Contact logging | PDPA / Internal policy | Every contact attempt recorded with timestamp + channel + outcome |
-| Contact frequency across products | Cross-product (via DaVinci) | DaVinci provides combined contact history; Sensei checks before allowing task |
+Contact compliance **data** is owned by **DaVinci**. DaVinci is the centralized customer contact record — it tracks every contact across all products, subsidiaries, and channels. DaVinci is responsible for:
+
+*   **Tracking**: Recording every customer contact (call, visit, SMS, email) with timestamp, channel, subsidiary, and outcome.
+*   **Aggregating**: Maintaining a real-time combined contact count per customer across all products.
+*   **Emitting events**: Publishing compliance-relevant events that downstream consumers interpret according to their own domain rules.
+
+**DaVinci Events (examples):**
+
+| Event | Payload | When Emitted |
+|-------|---------|-------------|
+| `ContactRecorded` | customer_id, channel, subsidiary_id, timestamp | After every contact is logged |
+| `ContactLimitApproaching` | customer_id, current_count, max_allowed | When count reaches threshold (e.g., 1 of 2) |
+| `ContactLimitReached` | customer_id, current_count, period | When daily/weekly limit is reached |
+| `ContactWindowClosed` | customer_id, reason (e.g., outside_hours) | When contact is attempted outside business hours |
+
+**Sensei as consumer**: Sensei subscribes to these events and applies its own interpretation:
+
+*   `ContactLimitReached` → Auto-skip remaining contact tasks for that customer today. Surface in supervisor exception panel.
+*   `ContactLimitApproaching` → Show warning badge on the customer's task card ("⚠️ เหลือ 1 ครั้ง").
+*   `ContactWindowClosed` → Do not present contact tasks outside business hours.
+
+This means **Sensei does not own compliance logic** — it reacts to DaVinci's signals. If a future product (automated SMS campaigns, call center system) also needs compliance enforcement, it consumes the same DaVinci events and applies its own rules. No dependency on Sensei.
 
 ### Action Verification (External System Cross-Check)
 
@@ -317,9 +412,7 @@ To ensure recorded outcomes are genuine (not fabricated), Sensei cross-reference
 *   Unverified and mismatched tasks are surfaced in the **Supervisor Exception Panel** for review.
 *   This is a **trust but verify** model — it does not block the CO from recording outcomes, but flags discrepancies after the fact.
 
-### Integration with DaVinci
-
-Sensei queries DaVinci for the **combined contact count** across all products for a given customer before allowing a contact task to proceed. This prevents scenarios where Subsidiary A calls a customer twice and Subsidiary B calls them twice on the same day — exceeding the legal limit.
+**Sensei → DaVinci feedback loop**: When Sensei records a contact outcome (e.g., CO made a call), it publishes a `ContactRecorded` event back to DaVinci so the centralized count stays accurate.
 
 ---
 
@@ -349,6 +442,7 @@ Templates are managed by HQ and referenced by Playbook Steps. Supervisors cannot
 | D5 | **Task Engine is event-driven, not batch-scheduled** | Branch operations are real-time — delinquency changes, payments, and renewals happen continuously. | Tasks are created from events (via DaVinci), not nightly batch jobs. Higher infrastructure complexity but enables same-day response. |
 | D6 | **One-by-one as primary, rapid-fire as extended** | COs handle 300-500 customers/day but complex cases need full context. | One-by-one processing is the default. Rapid-fire is an optional accelerated mode for experienced COs. Prevents mistakes from rushing while enabling throughput for skilled users. |
 | D7 | **Gamified leaderboard** | Staff motivation in high-volume roles benefits from visible competition. | Leaderboard with medals drives engagement. Risk: may create unhealthy competition — mitigated by combining rank with supervisor feedback and collaborative metrics. |
-| D8 | **Contact compliance at Sensei layer, not DaVinci** | DaVinci provides raw data (contact history); compliance enforcement is an operational concern. | Sensei checks DaVinci before every contact task. Clear separation: DaVinci = data, Sensei = rules. If compliance rules change, only Sensei needs updates. |
+| D8 | **DaVinci owns compliance data, consumers interpret** | Contact compliance must be enforceable by any system (Sensei, SMS campaigns, call centers), not just one. | DaVinci tracks all contacts centrally and emits events (`ContactLimitReached`, etc.). Each consumer (Sensei, future systems) subscribes and applies its own domain rules. No system depends on Sensei for compliance. Sensei feeds contact outcomes back to DaVinci to keep the central count accurate. |
 | D9 | **Trust-but-verify via 3CX cross-check** | COs could fabricate outcomes (record "called" without calling). Direct blocking would slow down legitimate work. | Sensei cross-references 3CX call logs after the fact. Flags discrepancies in supervisor exception panel. Does not block COs in real-time — maintains throughput while enabling accountability. |
-| D10 | **Product name: Sensei** | The system guides and structures branch operations — it teaches the organization how to work effectively. | Clear metaphor. Aligns with Japanese-themed naming convention (先生). |
+| D10 | **Centralized worklist, not workflow orchestrator** | Domain-specific workflows (loan underwriting, doc verification) have their own complex state machines. Forcing them through Sensei creates a god-service with too many concerns. | Sensei owns task tracking + branch UX, not upstream workflow logic. External services push tasks via `TaskCreationRequest` events. Sensei records outcomes and publishes `TaskCompleted` events. Upstream systems advance their own workflows. Low coupling, domain integrity preserved. |
+| D11 | **Product name: Sensei** | The system guides and structures branch operations — it teaches the organization how to work effectively. | Clear metaphor. Aligns with Japanese-themed naming convention (先生). |
