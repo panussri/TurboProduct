@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SENSEI — ข้อมูลลูกค้า</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-logo">S</div>
+            <div class="sidebar-nav">
+                <a href="customer-list.html" class="active" title="ลูกค้า">👥</a>
+                <a href="work-queue.html" title="คิวงาน">📋</a>
+                <a href="supervisor.html" title="แดชบอร์ด">📊</a>
+                <a href="performance.html" title="ผลงาน">🏆</a>
+            </div>
+            <div class="sidebar-divider"></div>
+            <div class="sidebar-nav">
+                <a href="#" title="ตั้งค่า">⚙️</a>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <header class="top-header">
+                <div class="top-header-left">
+                    <div class="top-header-title">SENSEI</div>
+                    <div class="top-header-breadcrumb">
+                        <a href="customer-list.html">รายชื่อลูกค้า</a>
+                        <span>/</span>
+                        <span style="color: var(--color-text-primary)">วัชรี จ่าปทอง</span>
+                    </div>
+                </div>
+                <div class="top-header-right">
+                    <span style="font-size:13px;color:var(--color-text-secondary)">คุณพลอย สุขใจ</span>
+                    <div class="user-avatar">พ</div>
+                </div>
+            </header>
+
+            <div class="page-content">
+                <!-- Customer Header -->
+                <div class="customer-header">
+                    <div class="customer-avatar">วร</div>
+                    <div class="customer-info">
+                        <div class="customer-name">
+                            วัชรี จ่าปทอง <small>(น้ำ)</small>
+                        </div>
+                        <div class="customer-meta">
+                            <div class="customer-meta-item">
+                                <span class="label">เบอร์โทรศัพท์</span>
+                                <span>📞 081-453-6754</span>
+                            </div>
+                            <div class="customer-meta-item">
+                                <span class="label">เบอร์ลูกค้า</span>
+                                <span>081-453-6754 (ลูกค้า)</span>
+                            </div>
+                            <div class="customer-meta-item">
+                                <span class="label">ข้อมูลลูกค้า</span>
+                                <a href="#" style="color:var(--color-primary);">ดูข้อมูลลูกค้า</a>
+                            </div>
+                        </div>
+                        <div class="customer-address">
+                            <span>📍</span>
+                            <div>
+                                <div>ที่อยู่ปัจจุบัน : บ้านเลขที่ 500 หมู่บ้านเพชรจัดสรร หมู่ 1 ซอยอมิตามหิร
+                                    ถนนบุกลมสว่าง แขวงมีนบุรี เขตมีนบุรี จังหวัดกรุงเทพมหานคร 10501111111</div>
+                                <div style="margin-top:2px;">ที่อยู่ตามบุคคล : บ้านเลขที่ 500 หมู่บ้านเพชรจัดสรร หมู่ 1
+                                    ซอยอมิตามหิร ถนนบุกลมสว่าง แขวงมีนบุรี เขตมีนบุรี จังหวัดกรุงเทพมหานคร 10501</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contracts Table + Notes Panel -->
+                <div style="display:grid; grid-template-columns: 1fr 380px; gap: 20px;">
+                    <!-- Left: Contracts Table -->
+                    <div>
+                        <div class="toolbar">
+                            <div class="toolbar-left">
+                                <h3 style="font-size:15px;font-weight:600;">สัญญาทั้งหมด</h3>
+                            </div>
+                            <div class="toolbar-right">
+                                <button class="btn btn-primary btn-sm">+ เพิ่มบันทึก</button>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div style="overflow-x: auto;">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>สัญญา</th>
+                                            <th>สถานะ DPD</th>
+                                            <th>บันทึกล่าสุด</th>
+                                            <th class="text-right">เงินค้างชำระ</th>
+                                            <th class="text-right">ค่างวด</th>
+                                            <th>วันที่ครบกำหนด</th>
+                                            <th class="text-right">ยอดชำระล่าสุด</th>
+                                            <th>Easy pass</th>
+                                            <th>สถานะ</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <div style="display:flex;align-items:center;gap:8px;">
+                                                    <span>🚗</span>
+                                                    <div>
+                                                        <div class="fw-600">100020122754</div>
+                                                        <div class="text-sm text-muted">ปรับสัญญา</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td><span class="tag tag-orange">30 DPD</span></td>
+                                            <td><span class="tag tag-green">นัดชำระ</span></td>
+                                            <td class="text-right fw-600">72,420.45</td>
+                                            <td class="text-right">2,000.00</td>
+                                            <td>12 พ.ย. 68</td>
+                                            <td class="text-right">4,000.00</td>
+                                            <td class="text-center">✖</td>
+                                            <td>
+                                                <span class="tag tag-orange">ลูกค้ากำเงินชำระแต่ขอลดยอดชำระ</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div style="display:flex;align-items:center;gap:8px;">
+                                                    <span>🚗</span>
+                                                    <div>
+                                                        <div class="fw-600">100020129988</div>
+                                                        <div class="text-sm text-muted">ทั่วไป</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td><span class="tag tag-red">60 DPD</span></td>
+                                            <td><span class="tag tag-green">นัดชำระ</span></td>
+                                            <td class="text-right fw-600">134,864.00</td>
+                                            <td class="text-right">15,000.00</td>
+                                            <td>12 พ.ย. 68</td>
+                                            <td class="text-right">10,000.00</td>
+                                            <td class="text-center">✔</td>
+                                            <td><span class="tag tag-green">ชำระแล้ว</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div style="display:flex;align-items:center;gap:8px;">
+                                                    <span>🏍️</span>
+                                                    <div>
+                                                        <div class="fw-600">200020122754</div>
+                                                        <div class="text-sm text-muted">สินเชื่อรถจักรยานยนต์</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td><span class="tag tag-orange">30 DPD</span></td>
+                                            <td><span class="tag tag-red">ไม่มีค่างวด</span></td>
+                                            <td class="text-right fw-600">100,250.00</td>
+                                            <td class="text-right">5,000.00</td>
+                                            <td>1 ส.ค. 68</td>
+                                            <td class="text-right">10,000.00</td>
+                                            <td class="text-center">✔</td>
+                                            <td><span class="tag tag-red">หนี้ค้างชำระ</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div style="display:flex;align-items:center;gap:8px;">
+                                                    <span>🏍️</span>
+                                                    <div>
+                                                        <div class="fw-600">200020122754</div>
+                                                        <div class="text-sm text-muted">สินเชื่อประกันภัย</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td><span class="tag tag-orange">30 DPD</span></td>
+                                            <td><span class="tag tag-green">ชำระแล้ว</span></td>
+                                            <td class="text-right fw-600">100,250.00</td>
+                                            <td class="text-right">5,000.00</td>
+                                            <td>1 ส.ค. 68</td>
+                                            <td class="text-right">10,000.00</td>
+                                            <td class="text-center">✔</td>
+                                            <td><span class="tag tag-green">ปกติ</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div style="display:flex;align-items:center;gap:8px;">
+                                                    <span>🏍️</span>
+                                                    <div>
+                                                        <div class="fw-600">200020122754</div>
+                                                        <div class="text-sm text-muted">สินเชื่อประกันแล้ว</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td><span class="tag tag-red">90 DPD</span></td>
+                                            <td><span class="tag tag-red">ค้างชำระ</span></td>
+                                            <td class="text-right fw-600">100,250.00</td>
+                                            <td class="text-right">5,000.00</td>
+                                            <td>1 ส.ค. 68</td>
+                                            <td class="text-right">10,000.00</td>
+                                            <td class="text-center">✔</td>
+                                            <td><span class="tag tag-red">ค้างชำระ</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div
+                                style="padding:12px 16px;border-top:1px solid var(--color-border);text-align:right;font-size:14px;">
+                                <strong>รวม</strong> <span
+                                    style="margin-left:20px;font-weight:700;font-size:16px;">64,000.00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Notes Panel -->
+                    <div class="notes-panel">
+                        <div class="notes-tabs">
+                            <button class="notes-tab active">บันทึกที่ยืนยันแล้ว</button>
+                            <button class="notes-tab">บันทึกรอยืนยัน <span class="badge badge-orange"
+                                    style="margin-left:4px;">3</span></button>
+                        </div>
+                        <div class="notes-list">
+                            <div
+                                style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                                <span class="fw-600" style="font-size:14px;">บันทึกล่าสุด</span>
+                                <button class="btn btn-ghost btn-icon">🔽</button>
+                            </div>
+
+                            <!-- Note 1 -->
+                            <div class="note-item">
+                                <div class="note-header">
+                                    <div class="note-contract">
+                                        <span>🚗</span> 100020122754
+                                        <span class="tag tag-orange">นัดปรับสัญญา</span>
+                                    </div>
+                                </div>
+                                <div class="note-body">
+                                    <div class="tag tag-blue mb-8" style="font-size:12px;">ติดตามต่อวันที่ 02 พ.ย. 68
+                                    </div>
+                                    <div style="color:var(--color-danger);font-size:13px;margin-bottom:4px;">ยอดนัดชำระ
+                                        : 4,000.00 บาท</div>
+                                </div>
+                                <div class="note-footer">
+                                    <span>เงินตรา มากมี, CO (เคหะร่มเกล้า)</span>
+                                    <span>|</span>
+                                    <span>02 ต.ค. 68 12.10 น.</span>
+                                </div>
+                            </div>
+
+                            <!-- Note 2 -->
+                            <div class="note-item">
+                                <div class="note-header">
+                                    <div class="note-contract">
+                                        <span>🚗</span> 100020129988
+                                        <span class="tag tag-green">นัดชำระ</span>
+                                    </div>
+                                </div>
+                                <div class="note-body">
+                                    <div class="tag tag-blue mb-8" style="font-size:12px;">ติดตามต่อวันที่ 02 พ.ย. 68
+                                    </div>
+                                    <div style="color:var(--color-danger);font-size:13px;margin-bottom:6px;">ยอดนัดชำระ
+                                        : 10,000.00 บาท</div>
+                                    <div style="font-size:13px;line-height:1.6;">จ่ายเรียบร้อยจากการลงพื้นที่ จำนวน
+                                        10,000.00 บาท ปล. ลูกค้าบอกสัญญานี้ขอปรับโครงสร้างได้มั้ย</div>
+                                    <div class="note-attachments mt-8">
+                                        <div class="note-attachment">📄 เอกสารยืนยันตัวตน.pdf</div>
+                                        <div class="note-attachment">📸 รูปหลักประกัน_01.jpg</div>
+                                        <div class="note-attachment">🎬 วิดีโอตรวจสอบหลักประกัน.mov</div>
+                                    </div>
+                                </div>
+                                <div class="note-footer">
+                                    <span>เงินตรา มากมี, CO (เคหะร่มเกล้า)</span>
+                                    <span>|</span>
+                                    <span>02 ต.ค. 68 12.10 น.</span>
+                                </div>
+                            </div>
+
+                            <!-- Note 3: Contact Failed -->
+                            <div class="note-item"
+                                style="border-color: var(--color-danger-light); background: #FFF5F5;">
+                                <div class="note-header">
+                                    <div class="note-contract">
+                                        <span style="font-size:14px;">ติดต่อลูกค้าไม่ได้</span>
+                                    </div>
+                                </div>
+                                <div class="note-body">
+                                    <div style="font-size:13px;margin-bottom:4px;">ช่องทางติดต่อ:
+                                        <strong>โทรศัพท์</strong> (ติดต่อไม่ได้)</div>
+                                    <div style="color:var(--color-danger);font-size:13px;margin-bottom:4px;">
+                                        ติดต่อลูกค้าไม่ได้ผ่านเบอร์หลัก 093-222-2222</div>
+                                    <div style="font-size:13px;">เดี๋ยวจะติดต่อผ่านการลงพื้นที่ในวันพรุ่งนี้</div>
+                                </div>
+                                <div class="note-footer">
+                                    <span>เงินตรา มากมี, CO (เคหะร่มเกล้า)</span>
+                                    <span>|</span>
+                                    <span>02 ต.ค. 68 12.10 น.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

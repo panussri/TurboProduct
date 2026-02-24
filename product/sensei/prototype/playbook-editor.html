@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SENSEI — แก้ไข Playbook</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* === Playbook Editor Specific Styles === */
+        .editor-layout {
+            display: grid;
+            grid-template-columns: 1fr 360px;
+            gap: 20px;
+            align-items: start;
+        }
+
+        .editor-layout.config-hidden {
+            grid-template-columns: 1fr;
+        }
+
+        .editor-layout.config-hidden .config-panel {
+            display: none;
+        }
+
+        /* Playbook Header */
+        .playbook-editor-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            background: var(--color-white);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .playbook-editor-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .playbook-editor-title h2 {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .playbook-editor-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 4px;
+            font-size: 12px;
+            color: var(--color-text-secondary);
+        }
+
+        /* Pipeline */
+        .pipeline {
+            position: relative;
+        }
+
+        /* Step Card */
+        .step-card {
+            background: var(--color-white);
+            border: 2px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            margin-bottom: 0;
+            position: relative;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .step-card:hover {
+            border-color: #D1D5DB;
+            box-shadow: var(--shadow-md);
+        }
+
+        .step-card.selected {
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(232, 98, 44, 0.15);
+        }
+
+        .step-card.locked {
+            border-left: 4px solid #9CA3AF;
+        }
+
+        .step-card.dragging {
+            opacity: 0.5;
+            border-style: dashed;
+        }
+
+        .step-card.drag-over {
+            border-color: var(--color-primary);
+            border-style: dashed;
+            background: var(--color-primary-light);
+        }
+
+        .step-card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            cursor: pointer;
+        }
+
+        .step-drag-handle {
+            cursor: grab;
+            color: var(--color-text-tertiary);
+            font-size: 18px;
+            padding: 4px;
+            user-select: none;
+            flex-shrink: 0;
+        }
+
+        .step-drag-handle:active {
+            cursor: grabbing;
+        }
+
+        .step-number {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--color-primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+
+        .step-card.locked .step-number {
+            background: #9CA3AF;
+        }
+
+        .step-info {
+            flex: 1;
+        }
+
+        .step-name {
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .step-timing {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+            margin-top: 2px;
+        }
+
+        .step-actions {
+            display: flex;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+
+        .step-action-btn {
+            width: 28px;
+            height: 28px;
+            border: none;
+            background: transparent;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            color: var(--color-text-tertiary);
+        }
+
+        .step-action-btn:hover {
+            background: var(--color-bg);
+            color: var(--color-text-primary);
+        }
+
+        .step-action-btn.delete:hover {
+            background: var(--color-danger-light);
+            color: var(--color-danger);
+        }
+
+        /* Outcome Transitions (inside step card) */
+        .step-outcomes {
+            border-top: 1px solid var(--color-border);
+            padding: 0 16px 14px 16px;
+        }
+
+        .step-outcomes-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--color-text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 10px 0 8px 0;
+        }
+
+        .outcome-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 0;
+            font-size: 13px;
+            border-bottom: 1px solid #F3F4F6;
+        }
+
+        .outcome-row:last-child {
+            border-bottom: none;
+        }
+
+        .outcome-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            min-width: 140px;
+            font-weight: 500;
+        }
+
+        .outcome-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .outcome-dot.green {
+            background: var(--color-success);
+        }
+
+        .outcome-dot.red {
+            background: var(--color-danger);
+        }
+
+        .outcome-dot.orange {
+            background: var(--color-primary);
+        }
+
+        .outcome-dot.blue {
+            background: var(--color-info);
+        }
+
+        .outcome-dot.gray {
+            background: #9CA3AF;
+        }
+
+        .outcome-dot.yellow {
+            background: var(--color-warning);
+        }
+
+        .outcome-arrow {
+            color: var(--color-text-tertiary);
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .outcome-target {
+            flex: 1;
+            font-size: 12px;
+            padding: 4px 10px;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-sm);
+            background: var(--color-bg);
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: var(--font-family);
+            color: var(--color-text-secondary);
+        }
+
+        .outcome-target:hover {
+            border-color: var(--color-primary);
+            background: var(--color-primary-light);
+        }
+
+        .outcome-target.success {
+            border-color: var(--color-success);
+            color: #15803D;
+            background: var(--color-success-light);
+        }
+
+        .outcome-target.danger {
+            border-color: var(--color-danger);
+            color: var(--color-danger);
+            background: var(--color-danger-light);
+        }
+
+        /* Connector between steps */
+        .step-connector {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 36px;
+            position: relative;
+        }
+
+        .step-connector::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--color-border);
+            transform: translateX(-50%);
+        }
+
+        .step-connector .add-step-btn {
+            position: relative;
+            z-index: 1;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 2px solid var(--color-border);
+            background: var(--color-white);
+            color: var(--color-text-tertiary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: var(--transition);
+            opacity: 0;
+        }
+
+        .step-connector:hover .add-step-btn {
+            opacity: 1;
+        }
+
+        .step-connector .add-step-btn:hover {
+            border-color: var(--color-primary);
+            color: var(--color-primary);
+            background: var(--color-primary-light);
+        }
+
+        /* Config Panel */
+        .config-panel {
+            background: var(--color-white);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 76px;
+        }
+
+        .config-panel-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--color-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .config-panel-title {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .config-panel-body {
+            padding: 20px;
+        }
+
+        .config-section {
+            margin-bottom: 20px;
+        }
+
+        .config-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .config-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--color-text-secondary);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .config-select {
+            width: 100%;
+            height: 36px;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-sm);
+            padding: 0 12px;
+            font-family: var(--font-family);
+            font-size: 13px;
+            background: var(--color-white);
+            cursor: pointer;
+        }
+
+        .config-select:focus {
+            outline: none;
+            border-color: var(--color-primary);
+        }
+
+        .config-info {
+            padding: 10px 12px;
+            background: var(--color-bg);
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            color: var(--color-text-secondary);
+        }
+
+        /* Footer Bar */
+        .editor-footer {
+            position: fixed;
+            bottom: 0;
+            left: 68px;
+            right: 0;
+            padding: 12px 24px;
+            background: var(--color-white);
+            border-top: 1px solid var(--color-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 50;
+            box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .editor-footer-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+            color: var(--color-text-secondary);
+        }
+
+        .unsaved-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--color-warning);
+            display: inline-block;
+        }
+
+        /* Add step modal (simple inline) */
+        .add-step-dropdown {
+            position: absolute;
+            z-index: 200;
+            background: var(--color-white);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            padding: 8px;
+            width: 220px;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 32px;
+            display: none;
+        }
+
+        .add-step-dropdown.visible {
+            display: block;
+        }
+
+        .add-step-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 13px;
+            transition: var(--transition);
+            border: none;
+            background: none;
+            width: 100%;
+            font-family: var(--font-family);
+            text-align: left;
+        }
+
+        .add-step-option:hover {
+            background: var(--color-primary-light);
+            color: var(--color-primary);
+        }
+
+        .page-content {
+            padding-bottom: 80px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-layout">
+        <nav class="sidebar">
+            <div class="sidebar-logo">S</div>
+            <div class="sidebar-nav">
+                <a href="customer-list.html" title="ลูกค้า">👥</a>
+                <a href="work-queue.html" title="คิวงาน">📋</a>
+                <a href="supervisor.html" class="active" title="แดชบอร์ด">📊</a>
+                <a href="performance.html" title="ผลงาน">🏆</a>
+            </div>
+            <div class="sidebar-divider"></div>
+            <div class="sidebar-nav">
+                <a href="#" title="ตั้งค่า">⚙️</a>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <header class="top-header">
+                <div class="top-header-left">
+                    <div class="top-header-title">SENSEI</div>
+                    <div class="top-header-breadcrumb">
+                        <a href="supervisor.html">แดชบอร์ด</a>
+                        <span>/</span>
+                        <a href="supervisor.html">Playbooks</a>
+                        <span>/</span>
+                        <span style="color:var(--color-text-primary)">แก้ไข Playbook</span>
+                    </div>
+                </div>
+                <div class="top-header-right">
+                    <span style="font-size:13px;color:var(--color-text-secondary)">คุณแนท หัวหน้าสาขา</span>
+                    <div class="user-avatar">น</div>
+                </div>
+            </header>
+
+            <div class="page-content">
+                <!-- Playbook Header -->
+                <div class="playbook-editor-header">
+                    <div class="playbook-editor-title">
+                        <span style="font-size:24px;">🔴</span>
+                        <div>
+                            <h2>ติดตามหนี้ค้างชำระ</h2>
+                            <div class="playbook-editor-meta">
+                                <span class="tag tag-orange">ฉบับสาขารัชดา</span>
+                                <span>·</span>
+                                <span>แก้ไขจากต้นฉบับ v3</span>
+                                <span>·</span>
+                                <span>7 ขั้นตอน</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:8px;">
+                        <button class="btn btn-outline btn-sm">👁️ ดูต้นฉบับ</button>
+                        <button class="btn btn-outline btn-sm">↻ รีเซ็ต</button>
+                    </div>
+                </div>
+
+                <!-- Editor Layout -->
+                <div class="editor-layout" id="editorLayout">
+                    <!-- Left: Step Pipeline -->
+                    <div class="pipeline" id="pipeline">
+
+                        <!-- STEP 1 -->
+                        <div class="step-card" draggable="true" data-step="1" onclick="selectStep(this, 1)">
+                            <div class="step-card-header">
+                                <span class="step-drag-handle" title="ลากเพื่อเรียงลำดับ">⠿</span>
+                                <div class="step-number">1</div>
+                                <div class="step-info">
+                                    <div class="step-name">📞 โทรศัพท์ครั้งที่ 1</div>
+                                    <div class="step-timing">Day 1 · Same CO · ลองใหม่ได้ 3 ครั้ง</div>
+                                </div>
+                                <div class="step-actions">
+                                    <button class="step-action-btn" title="แก้ไข"
+                                        onclick="event.stopPropagation(); selectStep(this.closest('.step-card'), 1)">✏️</button>
+                                    <button class="step-action-btn delete" title="ลบ"
+                                        onclick="event.stopPropagation()">🗑️</button>
+                                </div>
+                            </div>
+                            <div class="step-outcomes">
+                                <div class="step-outcomes-label">Outcome Transitions</div>
+                                <div class="outcome-row">
+                                    <div class="outcome-label"><span class="outcome-dot green"></span> PTP</div>
+                                    <span class="outcome-arrow">→</span>
+                                    <div class="outcome-target success">✅ จบ Playbook (สำเร็จ)</div>
+                                </div>
+                                <div class="outcome-row">
+                                    <div class="outcome-label"><span class="outcome-dot red"></span> ไม่รับสาย</div>
+                                    <span class="outcome-arrow">→</span>
+                                    <div class="outcome-target">🔄 ลองใหม่ (max 3) แล้ว → Step 5</div>
+                                </div>
+                                <div class="outcome-row">
+                                    <div class="outcome-label"><span class="outcome-dot red"></span> ปฏิเสธชำระ</div>
+                                    <span class="outcome-arrow">→</span>
+                                    <div class="outcome-target danger">⏭️ Step 6: 📋 ส่งรายงาน</div>
+                                </div>
+                                <div class="outcome-row">
+                                    <div class="outcome-label"><span class="outcome-dot orange"></span> นัดโทรกลับ</div>
+                                    <span class="outcome-arrow">→</span>
+                                    <div class="outcome-target">⏭️ Step 3: ⏳ รอ (พร้อมวันนัด)</div>
+                                </div>
+                                <div class="outcome-row">
+                                    <div class="outcome-label"><span class="outcome-dot gray"></span> เบอร์ผิด</div>
+                                    <span class="outcome-arrow">→</span>
+                                    <div class="outcome-target danger">⏭️ Step 6: 📋 ส่งรายงาน</div>
+                                </div>
+                                <div class="outcome-row">
+                                    <div class="outcome-label"><span class="outcome-dot blue"></span> Default</div>
+                                    <span class="outcome-arrow">→</span>
+                                    <div class="outcome-target">⏭️ ขั้นตอนถัดไป</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Connector -->
+                        <div class="step-connector">
+                            <button class="add-step-btn" onclick="toggleAddMenu(this)" title="เพิ่มขั้นตอน">+</button>
+                            <div class="add-step-dropdown">
+                                <button class="add-step-option" onclick="addStep('call')">📞 โทรศัพท์</button>
+                                <button class="add-step-option" onclick="addStep('visit')">🏠 ลงพื้นที่</button>
+                                <button class="add-step-option" onclick="addStep('wait')">⏳ รอ</button>
+                                <button class="add-step-option" onclick="addStep('admin')">📋 งานทั่วไป</button>
+                                <button class="add-step-option" onclick="addStep('notify')">🔔 แจ้งหัวหน้า</button>
+                                <button class="add-step-option" onclick="addStep('send')">📧 ส่งข้อความ</button>
+                            </div>
+                        </div>
+
+                        <!-- STEP 2 -->
+                        <div class="step-card" draggable="true" data-step="2" onclick="selectStep(this, 2)">
+                            <div class="step-card-header">
+                                <span class="step-drag-handle">⠿</span>
+                                <div class="step-number">2</div>
+                                <div class="step-info">
+                                    <div class="step-name">⏳ รอ</div>
+                                    <div class="step-timing">3 วัน · อัตโนมัติ</div>
+                                </div>
+                                <div class="step-actions">
+                                    <button class="step-action-btn" title="แก้ไข"
+                                        onclick="event.stopPropagation(); selectStep(this.closest('.step-card'), 2)">✏️</button>
+                                    <button class="step-action-btn delete" title="ลบ"
+                                        onclick="event.stopPropagation()">🗑️</button>
+                                </div>
+                            </div>
+                            <div class="step-outcomes">
+                                <div class="step-outcomes-label">Outcome Transitions</div>
+                                <div class="outcome-row">
+                                    <div class="outcome-label"><span class="outcome-dot blue"></span> ครบกำหนด</div>
+                                    <span class="outcome-arrow">→</span>
+                                    <div class="outcome-target">⏭️ ขั้นตอนถัดไป</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="step-connector">
+                            <button class="add-step-btn" onclick="toggleAddMenu(this)" title="เพิ่มขั้นตอน">+</button>
+                            <div class="add-step-dropdown">
+                                <button class="add-step-option" onclick="addStep('call')">📞 โทรศัพท์</button>
+                                <button class="add-step-option" onclick="addStep('visit')">🏠 ลงพื้นที่</button>
+                                <button class="add-step-option" onclick="addStep('wait')">⏳ รอ</button>
+                                <button class="add-step-option" onclick="addStep('admin')">📋 งานทั่วไป</button>
+                                <button class="add-step-option" onclick="addStep('notify')">🔔 แจ้งหัวหน้า</button>
+                                <button class="add-step-option" onclick="addStep('send')">📧 ส่งข้อความ</button>
+                            </div>
+                        </div>
+
+                        <!-- STEP 3 -->
+                        <div class="step-card" draggable="true" data-step="3" onclick="selectStep(this, 3)">
+                            <div class="step-card-header">
+                                <span class="step-drag-handle">⠿</span>
+                                <div class="step-number">3</div>
+                                <div class="step-info">
+                                    <div class="step-name">📞 โทรศัพท์ครั้งที่ 2</div>
+                                    <div class="step-timing">Day 4 · Same CO</div>
+                                </div>
+                                <div class="step-actions">
+                                    <button class="step-action-btn" title="แก้ไข"
+                                        onclick="event.stopPropagation(); selectStep(this.closest('.step-card'), 3)">✏️</button>
+                                    <button class="step-action-btn delete" title="ลบ"
+                                        onclick="event.stopPropagation()">🗑️</button>
+                                </div>
+                            </div>
+                            <div class="step-outcomes">
+                                <div class="step-outcomes-label">Outcome Transitions</div>
+                                <div class="outcome-row">
+                                    <div class="outcome-label"><span class="outcome-dot green"></span> PTP</div>
+                                    <span class="outcome-arrow">→</span>
+                                    <div class="outcome-target success">✅ จบ Playbook (สำเร็จ)</div>
+                                </div>
+                                <div class="outcome-row">
+                                    <div class="outcome-label"><span class="outcome-dot red"></span> ไม่รับสาย</div>
+                                    <span class="outcome-arrow">→</span>
+                                    <div class="outcome-target">⏭️ Step 5: 🏠 ลงพื้นที่</div>
+                                </div>
+                                <div class="outcome-row">
+                                    <div class="outcome-label"><span class="outcome-dot red"></span> ปฏิเสธชำระ</div>
+                                    <span class="outcome-arrow">→</span>
+                                    <div class="outcome-target danger">⏭️ Step 6: 📋 ส่งรายงาน</div>
+                                </div>
+                                <div class="outcome-row">
+                                    <div class="outcome-label"><span class="outcome-dot blue"></span> Default</div>
+                                    <span class="outcome-arrow">→</span>
+                                    <div class="outcome-target">⏭️ ขั้นตอนถัดไป</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="step-connector">
+                            <button class="add-step-btn" onclick="toggleAddMenu(this)" title="เพิ่มขั้นตอน">+</button>
+                            <div class="add-step-dropdown">
+                                <button class="add-step-option" onclick="addStep('call')">📞 โทรศัพท์</button>
+                                <button class="add-step-option" onclick="addStep('visit')">🏠 ลงพื้นที่</button>
+                                <button class="add-step-option" onclick="addStep('wait')">⏳ รอ</button>
+                                <button class="add-step-option" onclick="addStep('admin')">📋 งานทั่วไป</button>
+                                <button class="add-step-option" onclick="addStep('notify')">🔔 แจ้งหัวหน้า</button>
+                                <button class="add-step-option" onclick="addStep('send')">📧 ส่งข้อความ</button>
+                            </div>
+                        </div>
+
+                        <!-- STEP 4 -->
+                        <div class="step-card" draggable="true" data-step="4" onclick="selectStep(this, 4)">
+                            <div class="step-card-header">
+                                <span class="step-drag-handle">⠿</span>
+                                <div class="step-number">4</div>
+                                <div class="step-info">
+                                    <div class="step-name">⏳ รอ</div>
+                                    <div class="step-timing">3 วัน · อัตโนมัติ</div>
+                                </div>
+                                <div class="step-actions">
+                                    <button class="step-action-btn" title="แก้ไข"
+                                        onclick="event.stopPropagation(); selectStep(this.closest('.step-card'), 4)">✏️</button>
+                                    <button class="step-action-btn delete" title="ลบ"
+                                        onclick="event.stopPropagation()">🗑️</button>
+                                </div>
+                            </div>
+                            <div class="step-outcomes">
+                                <div class="step-outcomes-label">Outcome Transitions</div>
+                                <div class="outcome-row">
+                                    <div class="outcome-label"><span class="outcome-dot blue"></span> ครบกำหนด</div>
+                                    <span class="outcome-arrow">→</span>
+                                    <div class="outcome-target">⏭️ ขั้นตอนถัดไป</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="step-connector">
+                            <button class="add-step-btn" onclick="toggleAddMenu(this)" title="เพิ่มขั้นตอน">+</button>
+                            <div class="add-step-dropdown">
+                                <button class="add-step-option" onclick="addStep('call')">📞 โทรศัพท์</button>
+                                <button class="add-step-option" onclick="addStep('visit')">🏠 ลงพื้นที่</button>
+                                <button class="add-step-option" onclick="addStep('wait')">⏳ รอ</button>
+                                <button class="add-step-option" onclick="addStep('admin')">📋 งานทั่วไป</button>
+                                <button class="add-step-option" onclick="addStep('notify')">🔔 แจ้งหัวหน้า</button>
+                                <button class="add-step-option" onclick="addStep('send')">📧 ส่งข้อความ</button>
+                            </div>
+                        </div>
+
+                        <!-- STEP 5 -->
+                        <div class="step-card" draggable="true" data-step="5" onclick="selectStep(this, 5)">
+                            <div class="step-card-header">
+                                <span class="step-drag-handle">⠿</span>
+                                <div class="step-number">5</div>
+                                <div class="step-info">
+                                    <div class="step-name">🏠 ลงพื้นที่</div>
+                                    <div class="step-timing">Day 7 · Same CO</div>
+                                </div>
+                                <div class="step-actions">
+                                    <button class="step-action-btn" title="แก้ไข"
+                                        onclick="event.stopPropagation(); selectStep(this.closest('.step-card'), 5)">✏️</button>
+                                    <button class="step-action-btn delete" title="ลบ"
+                                        onclick="event.stopPropagation()">🗑️</button>
+                                </div>
+                            </div>
+                            <div class="step-outcomes">
+                                <div class="step-outcomes-label">Outcome Transitions</div>
+                                <div class="outcome-row">
+                                    <div class="outcome-label"><span class="outcome-dot green"></span> พบ & PTP</div>
+                                    <span class="outcome-arrow">→</span>
+                                    <div class="outcome-target success">✅ จบ Playbook (สำเร็จ)</div>
+                                </div>
+                                <div class="outcome-row">
+                                    <div class="outcome-label"><span class="outcome-dot red"></span> ไม่อยู่บ้าน</div>
+                                    <span class="outcome-arrow">→</span>
+                                    <div class="outcome-target">⏭️ Step 6: 📋 ส่งรายงาน</div>
+                                </div>
+                                <div class="outcome-row">
+                                    <div class="outcome-label"><span class="outcome-dot red"></span> ปฏิเสธ</div>
+                                    <span class="outcome-arrow">→</span>
+                                    <div class="outcome-target danger">⏭️ Step 6: 📋 ส่งรายงาน</div>
+                                </div>
+                                <div class="outcome-row">
+                                    <div class="outcome-label"><span class="outcome-dot gray"></span> ที่อยู่ไม่ถูก
+                                    </div>
+                                    <span class="outcome-arrow">→</span>
+                                    <div class="outcome-target danger">❌ จบ Playbook (ล้มเหลว)</div>
+                                </div>
+                                <div class="outcome-row">
+                                    <div class="outcome-label"><span class="outcome-dot blue"></span> Default</div>
+                                    <span class="outcome-arrow">→</span>
+                                    <div class="outcome-target">⏭️ ขั้นตอนถัดไป</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="step-connector">
+                            <button class="add-step-btn" onclick="toggleAddMenu(this)" title="เพิ่มขั้นตอน">+</button>
+                            <div class="add-step-dropdown">
+                                <button class="add-step-option" onclick="addStep('call')">📞 โทรศัพท์</button>
+                                <button class="add-step-option" onclick="addStep('visit')">🏠 ลงพื้นที่</button>
+                                <button class="add-step-option" onclick="addStep('wait')">⏳ รอ</button>
+                                <button class="add-step-option" onclick="addStep('admin')">📋 งานทั่วไป</button>
+                                <button class="add-step-option" onclick="addStep('notify')">🔔 แจ้งหัวหน้า</button>
+                                <button class="add-step-option" onclick="addStep('send')">📧 ส่งข้อความ</button>
+                            </div>
+                        </div>
+
+                        <!-- STEP 6 (LOCKED) -->
+                        <div class="step-card locked" draggable="false" data-step="6" onclick="selectStep(this, 6)">
+                            <div class="step-card-header">
+                                <span class="step-drag-handle" style="cursor:not-allowed;opacity:0.3;">⠿</span>
+                                <div class="step-number">6</div>
+                                <div class="step-info">
+                                    <div class="step-name">📋 ส่งรายงาน <span class="tag tag-gray"
+                                            style="font-size:10px;">🔒 ล็อค</span></div>
+                                    <div class="step-timing">Day 8 · Same CO · HQ กำหนด</div>
+                                </div>
+                                <div class="step-actions">
+                                    <button class="step-action-btn" title="ดู (ล็อค)"
+                                        onclick="event.stopPropagation(); selectStep(this.closest('.step-card'), 6)">👁️</button>
+                                </div>
+                            </div>
+                            <div class="step-outcomes">
+                                <div class="step-outcomes-label">Outcome Transitions <span
+                                        style="font-weight:400;color:var(--color-text-tertiary);">(🔒 ดูเท่านั้น)</span>
+                                </div>
+                                <div class="outcome-row">
+                                    <div class="outcome-label"><span class="outcome-dot green"></span> Completed</div>
+                                    <span class="outcome-arrow">→</span>
+                                    <div class="outcome-target" style="opacity:0.7;cursor:default;">⏭️ ขั้นตอนถัดไป
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="step-connector">
+                            <button class="add-step-btn" style="opacity:0;cursor:default;" disabled>+</button>
+                        </div>
+
+                        <!-- STEP 7 (LOCKED) -->
+                        <div class="step-card locked" draggable="false" data-step="7" onclick="selectStep(this, 7)">
+                            <div class="step-card-header">
+                                <span class="step-drag-handle" style="cursor:not-allowed;opacity:0.3;">⠿</span>
+                                <div class="step-number">7</div>
+                                <div class="step-info">
+                                    <div class="step-name">🔔 แจ้งหัวหน้า <span class="tag tag-gray"
+                                            style="font-size:10px;">🔒 ล็อค</span></div>
+                                    <div class="step-timing">อัตโนมัติ · เมื่อจบ Playbook · HQ กำหนด</div>
+                                </div>
+                                <div class="step-actions">
+                                    <button class="step-action-btn" title="ดู (ล็อค)"
+                                        onclick="event.stopPropagation(); selectStep(this.closest('.step-card'), 7)">👁️</button>
+                                </div>
+                            </div>
+                            <div class="step-outcomes">
+                                <div class="step-outcomes-label">Outcome Transitions <span
+                                        style="font-weight:400;color:var(--color-text-tertiary);">(🔒 ดูเท่านั้น)</span>
+                                </div>
+                                <div class="outcome-row">
+                                    <div class="outcome-label"><span class="outcome-dot green"></span> Acknowledged
+                                    </div>
+                                    <span class="outcome-arrow">→</span>
+                                    <div class="outcome-target success" style="opacity:0.7;cursor:default;">✅ จบ
+                                        Playbook</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Config Panel -->
+                    <div class="config-panel" id="configPanel">
+                        <div class="config-panel-header">
+                            <span class="config-panel-title">⚙️ ตั้งค่าขั้นตอน</span>
+                            <button class="step-action-btn" onclick="deselectStep()" title="ปิด">✕</button>
+                        </div>
+                        <div class="config-panel-body" id="configBody">
+                            <div class="config-info" style="text-align:center;padding:32px 12px;">
+                                <span style="font-size:32px;display:block;margin-bottom:8px;">👆</span>
+                                เลือกขั้นตอนจากด้านซ้ายเพื่อตั้งค่า
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="editor-footer">
+                <div class="editor-footer-left">
+                    <span class="unsaved-dot"></span>
+                    <span>มีการเปลี่ยนแปลงที่ยังไม่ได้บันทึก</span>
+                </div>
+                <div style="display:flex;gap:8px;">
+                    <a href="supervisor.html" class="btn btn-outline">ยกเลิก</a>
+                    <button class="btn btn-primary" onclick="savePlaybook()">💾 บันทึกเป็นฉบับสาขา</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // === Drag & Drop ===
+        let dragSrcEl = null;
+
+        document.querySelectorAll('.step-card[draggable="true"]').forEach(card => {
+            card.addEventListener('dragstart', handleDragStart);
+            card.addEventListener('dragend', handleDragEnd);
+            card.addEventListener('dragover', handleDragOver);
+            card.addEventListener('dragenter', handleDragEnter);
+            card.addEventListener('dragleave', handleDragLeave);
+            card.addEventListener('drop', handleDrop);
+        });
+
+        function handleDragStart(e) {
+            dragSrcEl = this;
+            this.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', this.dataset.step);
+        }
+
+        function handleDragEnd() {
+            this.classList.remove('dragging');
+            document.querySelectorAll('.step-card').forEach(c => c.classList.remove('drag-over'));
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+        }
+
+        function handleDragEnter(e) {
+            if (this !== dragSrcEl && this.draggable) {
+                this.classList.add('drag-over');
+            }
+        }
+
+        function handleDragLeave() {
+            this.classList.remove('drag-over');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            if (this !== dragSrcEl && this.draggable) {
+                const pipeline = document.getElementById('pipeline');
+                const allCards = [...pipeline.querySelectorAll('.step-card')];
+                const srcIndex = allCards.indexOf(dragSrcEl);
+                const dstIndex = allCards.indexOf(this);
+
+                // Get all pipeline children (cards + connectors)
+                const children = [...pipeline.children];
+                const srcChild = children.indexOf(dragSrcEl);
+                const dstChild = children.indexOf(this);
+
+                if (srcIndex < dstIndex) {
+                    // Moving down: insert after destination's connector
+                    const nextConnector = this.nextElementSibling;
+                    if (nextConnector) {
+                        const srcConnector = dragSrcEl.previousElementSibling;
+                        pipeline.insertBefore(dragSrcEl, nextConnector.nextElementSibling);
+                        if (srcConnector && srcConnector.classList.contains('step-connector')) {
+                            pipeline.insertBefore(srcConnector, dragSrcEl);
+                        }
+                    }
+                } else {
+                    // Moving up: insert before destination
+                    const srcConnector = dragSrcEl.nextElementSibling;
+                    pipeline.insertBefore(dragSrcEl, this);
+                    if (srcConnector && srcConnector.classList.contains('step-connector')) {
+                        pipeline.insertBefore(srcConnector, dragSrcEl.nextElementSibling);
+                    }
+                }
+
+                renumberSteps();
+            }
+            this.classList.remove('drag-over');
+        }
+
+        function renumberSteps() {
+            const cards = document.querySelectorAll('.step-card');
+            cards.forEach((card, i) => {
+                card.dataset.step = i + 1;
+                card.querySelector('.step-number').textContent = i + 1;
+            });
+        }
+
+        // === Step Selection ===
+        function selectStep(card, stepNum) {
+            document.querySelectorAll('.step-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+
+            const isLocked = card.classList.contains('locked');
+            const stepName = card.querySelector('.step-name').textContent.replace(/🔒.*/, '').trim();
+            const stepTiming = card.querySelector('.step-timing').textContent;
+
+            const configBody = document.getElementById('configBody');
+
+            if (isLocked) {
+                configBody.innerHTML = `
+      <div class="config-section">
+        <div class="config-info" style="border-left:3px solid #9CA3AF;">
+          <strong>🔒 ขั้นตอนนี้ถูกล็อกโดย HQ</strong><br>
+          <span style="margin-top:4px;display:block;">ไม่สามารถแก้ไข ลบ หรือเปลี่ยน Outcome ได้</span>
+        </div>
+      </div>
+      <div class="config-section">
+        <label class="config-label">ชื่อขั้นตอน</label>
+        <div class="config-info">${stepName}</div>
+      </div>
+      <div class="config-section">
+        <label class="config-label">Timing</label>
+        <div class="config-info">${stepTiming}</div>
+      </div>
+      <div class="config-section">
+        <label class="config-label">ผู้รับผิดชอบ</label>
+        <div class="config-info">Same CO (ตามที่ HQ กำหนด)</div>
+      </div>
+    `;
+            } else {
+                configBody.innerHTML = `
+      <div class="config-section">
+        <label class="config-label">ประเภทงาน</label>
+        <select class="config-select">
+          <option ${stepName.includes('โทร') ? 'selected' : ''}>📞 โทรศัพท์</option>
+          <option ${stepName.includes('ลงพื้นที่') ? 'selected' : ''}>🏠 ลงพื้นที่</option>
+          <option ${stepName.includes('รอ') ? 'selected' : ''}>⏳ รอ</option>
+          <option ${stepName.includes('ทั่วไป') || stepName.includes('ส่ง') ? 'selected' : ''}>📋 งานทั่วไป</option>
+          <option>🔔 แจ้งหัวหน้า</option>
+          <option>📧 ส่งข้อความ</option>
+        </select>
+      </div>
+      <div class="config-section">
+        <label class="config-label">ชื่อขั้นตอน</label>
+        <input type="text" class="form-input" value="${stepName}">
+      </div>
+      <div class="config-section">
+        <label class="config-label">Timing</label>
+        <div style="display:flex;gap:8px;">
+          <input type="number" class="form-input" value="1" style="width:60px;">
+          <select class="config-select" style="flex:1;">
+            <option>วันหลังจากขั้นตอนก่อน</option>
+            <option>ชั่วโมงหลังจากขั้นตอนก่อน</option>
+            <option selected>ทันทีหลังจากเริ่ม Playbook</option>
+          </select>
+        </div>
+      </div>
+      <div class="config-section">
+        <label class="config-label">ผู้รับผิดชอบ</label>
+        <select class="config-select">
+          <option selected>Same CO (คนเดิม)</option>
+          <option>Branch Supervisor</option>
+          <option>Auto-escalate</option>
+        </select>
+      </div>
+      <div class="config-section">
+        <label class="config-label">จำนวนลองใหม่ (Retry)</label>
+        <input type="number" class="form-input" value="3" min="0" max="10" style="width:80px;">
+        <span style="font-size:11px;color:var(--color-text-tertiary);margin-top:4px;display:block;">สำหรับ Outcome "ไม่รับสาย" — ลองใหม่กี่ครั้งก่อนข้ามไป</span>
+      </div>
+      <div class="config-section">
+        <label class="config-label">หมายเหตุ</label>
+        <textarea class="form-input" style="height:60px;padding:8px 12px;resize:none;" placeholder="บันทึกเหตุผลการเปลี่ยนแปลง..."></textarea>
+      </div>
+    `;
+            }
+        }
+
+        function deselectStep() {
+            document.querySelectorAll('.step-card').forEach(c => c.classList.remove('selected'));
+            document.getElementById('configBody').innerHTML = `
+    <div class="config-info" style="text-align:center;padding:32px 12px;">
+      <span style="font-size:32px;display:block;margin-bottom:8px;">👆</span>
+      เลือกขั้นตอนจากด้านซ้ายเพื่อตั้งค่า
+    </div>
+  `;
+        }
+
+        // === Add Step ===
+        function toggleAddMenu(btn) {
+            const dropdown = btn.nextElementSibling;
+            // Close all others
+            document.querySelectorAll('.add-step-dropdown').forEach(d => {
+                if (d !== dropdown) d.classList.remove('visible');
+            });
+            dropdown.classList.toggle('visible');
+        }
+
+        function addStep(type) {
+            const types = {
+                call: { name: '📞 โทรศัพท์ (ใหม่)', timing: '1 วัน · Same CO' },
+                visit: { name: '🏠 ลงพื้นที่ (ใหม่)', timing: '1 วัน · Same CO' },
+                wait: { name: '⏳ รอ (ใหม่)', timing: '1 วัน · อัตโนมัติ' },
+                admin: { name: '📋 งานทั่วไป (ใหม่)', timing: '1 วัน · Same CO' },
+                notify: { name: '🔔 แจ้งหัวหน้า (ใหม่)', timing: 'อัตโนมัติ' },
+                send: { name: '📧 ส่งข้อความ (ใหม่)', timing: 'อัตโนมัติ' }
+            };
+
+            const t = types[type];
+            const newCard = document.createElement('div');
+            newCard.className = 'step-card selected';
+            newCard.draggable = true;
+            newCard.dataset.step = '0';
+            newCard.setAttribute('onclick', `selectStep(this, parseInt(this.dataset.step))`);
+            newCard.innerHTML = `
+    <div class="step-card-header">
+      <span class="step-drag-handle">⠿</span>
+      <div class="step-number" style="background:var(--color-success)">✓</div>
+      <div class="step-info">
+        <div class="step-name">${t.name}</div>
+        <div class="step-timing">${t.timing}</div>
+      </div>
+      <div class="step-actions">
+        <button class="step-action-btn" title="แก้ไข" onclick="event.stopPropagation()">✏️</button>
+        <button class="step-action-btn delete" title="ลบ" onclick="event.stopPropagation(); this.closest('.step-card').remove(); renumberSteps();">🗑️</button>
+      </div>
+    </div>
+    <div class="step-outcomes">
+      <div class="step-outcomes-label">Outcome Transitions</div>
+      <div class="outcome-row">
+        <div class="outcome-label"><span class="outcome-dot blue"></span> Default</div>
+        <span class="outcome-arrow">→</span>
+        <div class="outcome-target">⏭️ ขั้นตอนถัดไป</div>
+      </div>
+    </div>
+  `;
+
+            // Find which connector's dropdown was clicked
+            const openDropdown = document.querySelector('.add-step-dropdown.visible');
+            if (openDropdown) {
+                const connector = openDropdown.parentElement;
+                connector.parentElement.insertBefore(newCard, connector.nextElementSibling);
+
+                // Add a new connector after the new card
+                const newConnector = document.createElement('div');
+                newConnector.className = 'step-connector';
+                newConnector.innerHTML = `
+      <button class="add-step-btn" onclick="toggleAddMenu(this)" title="เพิ่มขั้นตอน">+</button>
+      <div class="add-step-dropdown">
+        <button class="add-step-option" onclick="addStep('call')">📞 โทรศัพท์</button>
+        <button class="add-step-option" onclick="addStep('visit')">🏠 ลงพื้นที่</button>
+        <button class="add-step-option" onclick="addStep('wait')">⏳ รอ</button>
+        <button class="add-step-option" onclick="addStep('admin')">📋 งานทั่วไป</button>
+        <button class="add-step-option" onclick="addStep('notify')">🔔 แจ้งหัวหน้า</button>
+        <button class="add-step-option" onclick="addStep('send')">📧 ส่งข้อความ</button>
+      </div>
+    `;
+                newCard.parentElement.insertBefore(newConnector, newCard.nextElementSibling);
+
+                openDropdown.classList.remove('visible');
+            }
+
+            // Setup drag & drop for new card
+            newCard.addEventListener('dragstart', handleDragStart);
+            newCard.addEventListener('dragend', handleDragEnd);
+            newCard.addEventListener('dragover', handleDragOver);
+            newCard.addEventListener('dragenter', handleDragEnter);
+            newCard.addEventListener('dragleave', handleDragLeave);
+            newCard.addEventListener('drop', handleDrop);
+
+            renumberSteps();
+            selectStep(newCard, parseInt(newCard.dataset.step));
+        }
+
+        function savePlaybook() {
+            alert('✅ บันทึก Playbook "ติดตามหนี้ค้างชำระ" ฉบับสาขารัชดาเรียบร้อยแล้ว');
+            window.location.href = 'supervisor.html';
+        }
+
+        // Close dropdowns on outside click
+        document.addEventListener('click', (e) => {
+            if (!e.target.classList.contains('add-step-btn')) {
+                document.querySelectorAll('.add-step-dropdown').forEach(d => d.classList.remove('visible'));
+            }
+        });
+    </script>
+</body>
+
+</html>

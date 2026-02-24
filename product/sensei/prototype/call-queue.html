@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SENSEI — คิวโทรศัพท์</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="app-layout">
+        <nav class="sidebar">
+            <div class="sidebar-logo">S</div>
+            <div class="sidebar-nav">
+                <a href="customer-list.html" title="ลูกค้า">👥</a>
+                <a href="work-queue.html" class="active" title="คิวงาน">📋</a>
+                <a href="supervisor.html" title="แดชบอร์ด">📊</a>
+                <a href="performance.html" title="ผลงาน">🏆</a>
+            </div>
+            <div class="sidebar-divider"></div>
+            <div class="sidebar-nav">
+                <a href="#" title="ตั้งค่า">⚙️</a>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <header class="top-header">
+                <div class="top-header-left">
+                    <div class="top-header-title">SENSEI</div>
+                    <div class="top-header-breadcrumb">
+                        <a href="work-queue.html">คิวงาน</a>
+                        <span>/</span>
+                        <span style="color:var(--color-text-primary)">📞 คิวโทรศัพท์</span>
+                    </div>
+                </div>
+                <div class="top-header-right">
+                    <a href="work-queue.html" class="btn btn-outline btn-sm">← กลับ</a>
+                </div>
+            </header>
+
+            <div class="page-content">
+                <div class="call-queue-wrapper">
+                    <!-- Progress -->
+                    <div class="call-progress">
+                        <h3>📞 คิวโทรศัพท์</h3>
+                        <div class="progress-label">3 <span
+                                style="font-weight:400;font-size:16px;color:var(--color-text-secondary)">จาก</span> 22
+                        </div>
+                        <div class="progress-bar" style="max-width:400px;margin:0 auto;height:10px;">
+                            <div class="progress-bar-fill orange" style="width:14%"></div>
+                        </div>
+                        <div class="text-sm text-muted mt-8">⏱️ เริ่ม 10:32 น. | ⏱️ เวลาเฉลี่ย: 1.5 นาที/ราย</div>
+                    </div>
+
+                    <!-- Customer Card -->
+                    <div class="call-customer-card">
+                        <div class="call-customer-top">
+                            <div
+                                style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+                                <div>
+                                    <div class="call-customer-name">นิด ศรีสวัสดิ์</div>
+                                    <div class="flex gap-8 items-center">
+                                        <span class="tag tag-orange">38 DPD</span>
+                                        <span class="tag tag-orange">โทรนัด PTP</span>
+                                        <span class="tag tag-gray">ติดต่อครั้งแรก</span>
+                                    </div>
+                                </div>
+                                <a href="customer-detail.html" class="btn btn-ghost btn-sm"
+                                    style="white-space:nowrap;">ดูรายละเอียด →</a>
+                            </div>
+
+                            <!-- Phone Button -->
+                            <button class="call-phone-btn mt-16">
+                                📞 081-555-9999
+                            </button>
+
+                            <!-- Info Grid -->
+                            <div class="call-customer-info">
+                                <div class="call-info-item">
+                                    <div class="call-info-label">💰 สินเชื่อ</div>
+                                    <div class="call-info-value">฿45,000</div>
+                                </div>
+                                <div class="call-info-item">
+                                    <div class="call-info-label">📋 ค่างวดขั้นต่ำ</div>
+                                    <div class="call-info-value">฿5,200</div>
+                                </div>
+                                <div class="call-info-item">
+                                    <div class="call-info-label">📊 ติดต่อวันนี้</div>
+                                    <div class="call-info-value">0/2 <span class="text-sm text-success">✔ ได้</span>
+                                    </div>
+                                </div>
+                                <div class="call-info-item">
+                                    <div class="call-info-label">🛡️ ประกัน</div>
+                                    <div class="call-info-value text-sm">Motor (ปกติ)</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Outcomes -->
+                        <div class="call-outcomes">
+                            <h4>บันทึกผลลัพธ์</h4>
+                            <div class="outcome-grid">
+                                <button class="outcome-btn success" onclick="selectOutcome(this, 'ptp')">
+                                    ✅ ได้ PTP
+                                </button>
+                                <button class="outcome-btn" onclick="selectOutcome(this, 'no-answer')">
+                                    ❌ ไม่รับสาย
+                                </button>
+                                <button class="outcome-btn" onclick="selectOutcome(this, 'refused')">
+                                    ❌ ปฏิเสธชำระ
+                                </button>
+                                <button class="outcome-btn" onclick="selectOutcome(this, 'callback')">
+                                    ⏳ นัดโทรกลับ
+                                </button>
+                            </div>
+
+                            <!-- PTP Fields (shown when PTP selected) -->
+                            <div class="ptp-fields" id="ptp-fields">
+                                <div class="field-row">
+                                    <div style="flex:1">
+                                        <label>ยอด PTP (บาท)</label>
+                                        <input type="text" class="form-input" value="5,200" placeholder="ยอดเงิน">
+                                    </div>
+                                    <div style="flex:1">
+                                        <label>วันที่นัด PTP</label>
+                                        <input type="date" class="form-input" value="2026-02-28">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Notes -->
+                            <div style="margin-top:16px;">
+                                <label
+                                    style="display:block;font-size:12px;font-weight:500;color:var(--color-text-secondary);margin-bottom:4px;">หมายเหตุ
+                                    (ไม่บังคับ)</label>
+                                <textarea class="form-input" style="height:60px;padding:8px 12px;resize:none;"
+                                    placeholder="บันทึกเพิ่มเติม..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Submit -->
+                        <div class="call-submit">
+                            <button class="btn-next">
+                                บันทึก → ถัดไป ▶
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Skip / Previous -->
+                    <div style="display:flex;justify-content:space-between;margin-top:16px;">
+                        <button class="btn btn-ghost">← ก่อนหน้า</button>
+                        <button class="btn btn-ghost" style="color:var(--color-danger)">ข้าม →</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function selectOutcome(btn, type) {
+            // Remove selected from all
+            document.querySelectorAll('.outcome-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+
+            // Show/hide PTP fields
+            const ptpFields = document.getElementById('ptp-fields');
+            if (type === 'ptp') {
+                ptpFields.classList.add('visible');
+            } else {
+                ptpFields.classList.remove('visible');
+            }
+        }
+    </script>
+</body>
+
+</html>

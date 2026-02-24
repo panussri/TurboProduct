@@ -1,4 +1,4 @@
-# CHANGELOG 001 — Genesis: Initial Product Definition
+# CHANGELOG 001 — DaVinci: Initial Product Definition
 
 **Date**: 2026-02-19
 **Author**: @ARCHITECT
@@ -8,13 +8,13 @@
 
 ## Summary
 
-Established **Genesis** as the centralized Customer & Product Master Data platform for the enterprise. This is the foundational data layer that all future systems will query for up-to-date customer and product summary information.
+Established **DaVinci** as the centralized Customer & Product Master Data platform for the enterprise. This is the foundational data layer that all future systems will query for up-to-date customer and product summary information.
 
 ## New Capabilities
 
 ### 1. Single View of Customer (Golden Record)
 *   Unified customer identity profile across all business lines (Loans, Insurance).
-*   System-generated `genesis_customer_id` as canonical key.
+*   System-generated `davinci_customer_id` as canonical key.
 *   Product summary linkage (balances, statuses) — not full transactional detail.
 *   Multi-subsidiary awareness on all records.
 
@@ -49,4 +49,4 @@ Established **Genesis** as the centralized Customer & Product Master Data platfo
 | D3 | Directed consent model | Legally precise. A→B consent does not imply B→A. |
 | D4 | Event-driven sync | Near-real-time needed for collection compliance. |
 | D5 | Change requests, not direct edits | Governance for high-risk fields. Low-risk auto-approved. |
-| D6 | Product name: Genesis | Foundational layer — everything builds on top. |
+| D6 | Product name: DaVinci | Centralized master data layer — the Renaissance polymath who unified all domains. |
