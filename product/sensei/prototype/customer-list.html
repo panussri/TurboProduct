@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SENSEI — รายชื่อลูกค้า</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="app-layout">
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="sidebar-logo">S</div>
+    <div class="sidebar-nav">
+      <a href="customer-list.html" class="active" title="ลูกค้า">👥</a>
+      <a href="work-queue.html" title="คิวงาน">📋</a>
+      <a href="supervisor.html" title="แดชบอร์ด">📊</a>
+      <a href="performance.html" title="ผลงาน">🏆</a>
+    </div>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-nav">
+      <a href="#" title="ตั้งค่า">⚙️</a>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Top Header -->
+    <header class="top-header">
+      <div class="top-header-left">
+        <div class="top-header-title">SENSEI</div>
+        <div class="top-header-breadcrumb">
+          <span>สาขารัชดา</span> / <span style="color: var(--color-text-primary)">รายชื่อลูกค้า</span>
+        </div>
+      </div>
+      <div class="top-header-right">
+        <span style="font-size: 13px; color: var(--color-text-secondary)">คุณพลอย สุขใจ</span>
+        <div class="user-avatar">พ</div>
+      </div>
+    </header>
+
+    <!-- Page Content -->
+    <div class="page-content">
+      <!-- Toolbar -->
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <div class="tab-pills">
+            <button class="tab-pill active">ทั้งหมด</button>
+            <button class="tab-pill">งาน <span class="badge badge-orange" style="margin-left:4px;">28</span></button>
+          </div>
+          <div class="input-search" style="width: 280px;">
+            <span class="icon">🔍</span>
+            <input type="text" placeholder="ค้นหาชื่อ, เลขสัญญา, เบอร์โทร...">
+          </div>
+        </div>
+        <div class="toolbar-right">
+          <button class="btn btn-outline btn-sm">📥 ส่งออก</button>
+          <button class="btn btn-outline btn-sm">🔽 กรอง</button>
+        </div>
+      </div>
+
+      <!-- Data Table -->
+      <div class="card">
+        <div style="overflow-x: auto;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width: 200px">ลูกค้า</th>
+                <th>สัญญา</th>
+                <th>สถานะ DPD</th>
+                <th class="text-right">ยอดค้างชำระ</th>
+                <th>วันครบกำหนด</th>
+                <th class="text-right">ค่างวด</th>
+                <th>สถานะบันทึก</th>
+                <th>ผู้รับผิดชอบ</th>
+                <th>งาน Sensei</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="clickable" onclick="window.location='customer-detail.html'">
+                <td>
+                  <div style="display:flex;align-items:center;gap:10px;">
+                    <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#FF9A56,#E8622C);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-size:12px;flex-shrink:0;">วร</div>
+                    <div>
+                      <div class="fw-600">วัชรี จ่าปทอง (น้ำ)</div>
+                      <div class="text-sm text-muted">081-453-6754</div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div>100020122754</div>
+                  <div class="text-sm text-muted">ปรับสัญญา</div>
+                </td>
+                <td><span class="tag tag-orange">30 DPD</span></td>
+                <td class="text-right fw-600">72,420.45</td>
+                <td>12 พ.ย. 68</td>
+                <td class="text-right">2,000.00</td>
+                <td><span class="tag tag-green">✅ ติดตามลูกค้า</span></td>
+                <td class="text-muted">พลอย</td>
+                <td>
+                  <span class="tag tag-orange">📞 โทรนัดPTP</span>
+                </td>
+              </tr>
+
+              <tr class="clickable" onclick="window.location='customer-detail.html'">
+                <td>
+                  <div style="display:flex;align-items:center;gap:10px;">
+                    <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#60A5FA,#3B82F6);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-size:12px;flex-shrink:0;">สม</div>
+                    <div>
+                      <div class="fw-600">สมชาย ใจดี</div>
+                      <div class="text-sm text-muted">089-123-4567</div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div>100020129988</div>
+                  <div class="text-sm text-muted">ทั่วไป</div>
+                </td>
+                <td><span class="tag tag-red">60 DPD</span></td>
+                <td class="text-right fw-600">134,864.00</td>
+                <td>12 พ.ย. 68</td>
+                <td class="text-right">15,000.00</td>
+                <td><span class="tag tag-orange">⏳ รอติดตาม</span></td>
+                <td class="text-muted">พลอย</td>
+                <td>
+                  <span class="tag tag-red">🏠 ลงพื้นที่</span>
+                </td>
+              </tr>
+
+              <tr class="clickable" onclick="window.location='customer-detail.html'">
+                <td>
+                  <div style="display:flex;align-items:center;gap:10px;">
+                    <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#A78BFA,#7C3AED);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-size:12px;flex-shrink:0;">ปร</div>
+                    <div>
+                      <div class="fw-600">ประสิทธิ์ แก้วใส</div>
+                      <div class="text-sm text-muted">092-987-6543</div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div>200020122754</div>
+                  <div class="text-sm text-muted">ทั่วไป</div>
+                </td>
+                <td><span class="tag tag-orange">30 DPD</span></td>
+                <td class="text-right fw-600">100,250.00</td>
+                <td>1 ส.ค. 68</td>
+                <td class="text-right">5,000.00</td>
+                <td><span class="tag tag-gray">—</span></td>
+                <td class="text-muted">พลอย</td>
+                <td>
+                  <span class="tag tag-orange">📞 โทรนัดPTP</span>
+                </td>
+              </tr>
+
+              <tr class="clickable" onclick="window.location='customer-detail.html'">
+                <td>
+                  <div style="display:flex;align-items:center;gap:10px;">
+                    <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#34D399,#059669);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-size:12px;flex-shrink:0;">นิ</div>
+                    <div>
+                      <div class="fw-600">นิด ศรีสวัสดิ์</div>
+                      <div class="text-sm text-muted">081-555-9999</div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div>200020122754</div>
+                  <div class="text-sm text-muted">ทั่วไป</div>
+                </td>
+                <td><span class="tag tag-orange">38 DPD</span></td>
+                <td class="text-right fw-600">45,000.00</td>
+                <td>1 ส.ค. 68</td>
+                <td class="text-right">5,200.00</td>
+                <td><span class="tag tag-gray">—</span></td>
+                <td class="text-muted">พลอย</td>
+                <td>
+                  <span class="tag tag-orange">📞 โทรนัดPTP</span>
+                </td>
+              </tr>
+
+              <tr class="clickable" onclick="window.location='customer-detail.html'">
+                <td>
+                  <div style="display:flex;align-items:center;gap:10px;">
+                    <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#F472B6,#EC4899);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-size:12px;flex-shrink:0;">ดา</div>
+                    <div>
+                      <div class="fw-600">ดาว สว่างจิต</div>
+                      <div class="text-sm text-muted">086-333-4444</div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div>200020122754</div>
+                  <div class="text-sm text-muted">ทั่วไป</div>
+                </td>
+                <td><span class="tag tag-red">52 DPD</span></td>
+                <td class="text-right fw-600">320,000.00</td>
+                <td>1 ส.ค. 68</td>
+                <td class="text-right">5,000.00</td>
+                <td><span class="tag tag-red">❌ ติดต่อไม่ได้</span></td>
+                <td class="text-muted">พลอย</td>
+                <td>
+                  <span class="tag tag-red">🏠 ลงพื้นที่</span>
+                </td>
+              </tr>
+
+              <tr class="clickable" onclick="window.location='customer-detail.html'">
+                <td>
+                  <div style="display:flex;align-items:center;gap:10px;">
+                    <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#FBBF24,#F59E0B);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-size:12px;flex-shrink:0;">เล</div>
+                    <div>
+                      <div class="fw-600">เลิศ รุ่งเรือง</div>
+                      <div class="text-sm text-muted">095-777-8888</div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div>200020122754</div>
+                  <div class="text-sm text-muted">ทั่วไป</div>
+                </td>
+                <td><span class="tag tag-green">ปกติ</span></td>
+                <td class="text-right fw-600">0.00</td>
+                <td>1 ส.ค. 68</td>
+                <td class="text-right">5,000.00</td>
+                <td><span class="tag tag-green">✅ ชำระแล้ว</span></td>
+                <td class="text-muted">พลอย</td>
+                <td>
+                  <span class="tag tag-blue">🔔 ต่อประกัน</span>
+                </td>
+              </tr>
+
+              <tr class="clickable" onclick="window.location='customer-detail.html'">
+                <td>
+                  <div style="display:flex;align-items:center;gap:10px;">
+                    <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#FB923C,#EA580C);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-size:12px;flex-shrink:0;">วิ</div>
+                    <div>
+                      <div class="fw-600">วิชัย สุขสันต์</div>
+                      <div class="text-sm text-muted">063-222-3333</div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div>200020122754</div>
+                  <div class="text-sm text-muted">ทั่วไป</div>
+                </td>
+                <td><span class="tag tag-orange">35 DPD</span></td>
+                <td class="text-right fw-600">95,000.00</td>
+                <td>1 ส.ค. 68</td>
+                <td class="text-right">5,000.00</td>
+                <td><span class="tag tag-red">❌ ติดต่อไม่ได้</span></td>
+                <td class="text-muted">นัท</td>
+                <td>
+                  <span class="tag tag-orange">📞 โทรนัดPTP</span>
+                </td>
+              </tr>
+
+              <tr class="clickable" onclick="window.location='customer-detail.html'">
+                <td>
+                  <div style="display:flex;align-items:center;gap:10px;">
+                    <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#67E8F9,#06B6D4);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-size:12px;flex-shrink:0;">ส่</div>
+                    <div>
+                      <div class="fw-600">สมใจ ดีจัง</div>
+                      <div class="text-sm text-muted">091-444-5555</div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div>200020122754</div>
+                  <div class="text-sm text-muted">ทั่วไป</div>
+                </td>
+                <td><span class="tag tag-orange">30 DPD</span></td>
+                <td class="text-right fw-600">100,250.00</td>
+                <td>1 ส.ค. 68</td>
+                <td class="text-right">5,000.00</td>
+                <td><span class="tag tag-green">✅ นัดPTPแล้ว</span></td>
+                <td class="text-muted">พลอย</td>
+                <td>
+                  <span class="tag tag-green">✅ เสร็จแล้ว</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- Footer -->
+        <div style="padding: 12px 20px; border-top: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: center;">
+          <span class="text-sm text-muted">แสดง 1-8 จาก 342 รายการ</span>
+          <div style="display:flex; gap:4px;">
+            <button class="btn btn-outline btn-sm" disabled>‹</button>
+            <button class="btn btn-primary btn-sm">1</button>
+            <button class="btn btn-outline btn-sm">2</button>
+            <button class="btn btn-outline btn-sm">3</button>
+            <button class="btn btn-outline btn-sm">...</button>
+            <button class="btn btn-outline btn-sm">43</button>
+            <button class="btn btn-outline btn-sm">›</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+</body>
+</html>

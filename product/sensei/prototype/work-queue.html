@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SENSEI — คิวงานวันนี้</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="app-layout">
+        <nav class="sidebar">
+            <div class="sidebar-logo">S</div>
+            <div class="sidebar-nav">
+                <a href="customer-list.html" title="ลูกค้า">👥</a>
+                <a href="work-queue.html" class="active" title="คิวงาน">📋</a>
+                <a href="supervisor.html" title="แดชบอร์ด">📊</a>
+                <a href="performance.html" title="ผลงาน">🏆</a>
+            </div>
+            <div class="sidebar-divider"></div>
+            <div class="sidebar-nav">
+                <a href="#" title="ตั้งค่า">⚙️</a>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <header class="top-header">
+                <div class="top-header-left">
+                    <div class="top-header-title">SENSEI</div>
+                    <div class="top-header-breadcrumb">
+                        <span>สาขารัชดา</span> / <span style="color:var(--color-text-primary)">คิวงานวันนี้</span>
+                    </div>
+                </div>
+                <div class="top-header-right">
+                    <span style="font-size:13px;color:var(--color-text-secondary)">คุณพลอย สุขใจ</span>
+                    <div class="user-avatar">พ</div>
+                </div>
+            </header>
+
+            <div class="page-content">
+                <!-- Overview Bar -->
+                <div class="kpi-row">
+                    <div class="kpi-card accent">
+                        <div class="kpi-label">📋 งานวันนี้</div>
+                        <div class="kpi-value">28</div>
+                        <div class="kpi-sub">จาก 342 ลูกค้าทั้งหมด</div>
+                    </div>
+                    <div class="kpi-card danger">
+                        <div class="kpi-label">🔴 ค้างดำเนินการ</div>
+                        <div class="kpi-value" style="color:var(--color-danger)">3</div>
+                        <div class="kpi-sub">เกินกำหนด SLA</div>
+                    </div>
+                    <div class="kpi-card success">
+                        <div class="kpi-label">✅ เสร็จแล้ว</div>
+                        <div class="kpi-value" style="color:var(--color-success)">12</div>
+                        <div class="kpi-sub">43% ของวันนี้</div>
+                    </div>
+                    <div class="kpi-card warning">
+                        <div class="kpi-label">💰 PTP วันนี้</div>
+                        <div class="kpi-value">฿95K</div>
+                        <div class="kpi-sub">จาก 4 สัญญา</div>
+                    </div>
+                </div>
+
+                <!-- Supervisor Note -->
+                <div class="card mb-20" style="border-left:4px solid var(--color-info);">
+                    <div class="card-body" style="padding:14px 20px;display:flex;align-items:center;gap:12px;">
+                        <span style="font-size:18px;">💬</span>
+                        <div>
+                            <span class="fw-600" style="font-size:13px;">จากหัวหน้าแนท:</span>
+                            <span style="font-size:13px;color:var(--color-text-secondary);margin-left:6px;">เยี่ยมมาก!
+                                PTP วานนี้ได้ดี ✨ วันนี้ลองเน้นติดตาม DPD > 60 ก่อนนะคะ</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CALLS BUCKET -->
+                <div class="queue-bucket">
+                    <div class="queue-bucket-header" onclick="this.parentElement.classList.toggle('expanded')">
+                        <div class="queue-bucket-title">
+                            <span class="emoji">📞</span>
+                            <span>โทรศัพท์</span>
+                            <span class="badge badge-orange">22</span>
+                        </div>
+                        <div class="queue-bucket-count">
+                            <a href="call-queue.html" class="btn btn-primary btn-sm"
+                                onclick="event.stopPropagation()">เริ่มคิว ▶</a>
+                        </div>
+                    </div>
+                    <div class="queue-sub-group" style="background:#FEE2E2;">
+                        <div class="queue-sub-group-header">
+                            <span>🔴 ค้างดำเนินการ (เกิน SLA)</span>
+                            <span class="count" style="color:var(--color-danger)">3 รายการ</span>
+                        </div>
+                    </div>
+                    <div class="queue-sub-group">
+                        <div class="queue-sub-group-header">
+                            <span>⚡ สำคัญ — DPD > 60</span>
+                            <span class="count">5 รายการ</span>
+                        </div>
+                    </div>
+                    <div class="queue-sub-group">
+                        <div class="queue-sub-group-header">
+                            <span>📋 ปกติ — DPD 30-60</span>
+                            <span class="count">8 รายการ</span>
+                        </div>
+                    </div>
+                    <div class="queue-sub-group">
+                        <div class="queue-sub-group-header">
+                            <span>🔔 ต่อประกัน < 15 วัน</span>
+                                    <span class="count">4 รายการ</span>
+                        </div>
+                    </div>
+                    <div class="queue-sub-group">
+                        <div class="queue-sub-group-header">
+                            <span>📞 นัดโทรกลับ</span>
+                            <span class="count">2 รายการ</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VISITS BUCKET -->
+                <div class="queue-bucket">
+                    <div class="queue-bucket-header">
+                        <div class="queue-bucket-title">
+                            <span class="emoji">🏠</span>
+                            <span>ลงพื้นที่</span>
+                            <span class="badge badge-orange">4</span>
+                        </div>
+                        <div class="queue-bucket-count">
+                            <button class="btn btn-outline btn-sm">📍 วางแผนเส้นทาง</button>
+                        </div>
+                    </div>
+                    <div class="queue-sub-group">
+                        <div class="queue-sub-group-header">
+                            <span>⚡ ติดต่อไม่ได้ (ครบ 3 ครั้ง)</span>
+                            <span class="count">3 รายการ</span>
+                        </div>
+                    </div>
+                    <div class="queue-sub-group">
+                        <div class="queue-sub-group-header">
+                            <span>📋 นัดติดตามเดิม</span>
+                            <span class="count">1 รายการ</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ADMIN BUCKET -->
+                <div class="queue-bucket">
+                    <div class="queue-bucket-header">
+                        <div class="queue-bucket-title">
+                            <span class="emoji">📖</span>
+                            <span>งานทั่วไป</span>
+                            <span class="badge badge-orange">2</span>
+                        </div>
+                        <div class="queue-bucket-count">
+                            <button class="btn btn-outline btn-sm">ดูทั้งหมด</button>
+                        </div>
+                    </div>
+                    <div class="queue-sub-group">
+                        <div class="queue-sub-group-header">
+                            <span>📖 อ่านและยืนยันนโยบายใหม่ v2.3</span>
+                            <span class="count tag tag-yellow" style="font-size:11px;">เหลือ 3 วัน</span>
+                        </div>
+                    </div>
+                    <div class="queue-sub-group">
+                        <div class="queue-sub-group-header">
+                            <span>📋 ส่งรายงานประจำสัปดาห์</span>
+                            <span class="count tag tag-gray" style="font-size:11px;">ศุกร์</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Today's Progress -->
+                <div class="card mt-16">
+                    <div class="card-header">
+                        <div class="card-title">📊 ดำเนินการแล้ววันนี้</div>
+                    </div>
+                    <div class="card-body">
+                        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
+                            <div>
+                                <div class="text-sm text-muted mb-4">📞 โทรศัพท์</div>
+                                <div class="flex items-center gap-8 mb-8">
+                                    <span class="fw-700" style="font-size:20px;">10/22</span>
+                                    <span class="text-sm text-muted">45%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-bar-fill orange" style="width:45%"></div>
+                                </div>
+                                <div class="mt-8 text-sm">
+                                    <span class="text-success">✅ PTP: 3</span> &nbsp;
+                                    <span class="text-danger">❌ ไม่รับ: 5</span> &nbsp;
+                                    <span class="text-warning">⏳ 2</span>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="text-sm text-muted mb-4">🏠 ลงพื้นที่</div>
+                                <div class="flex items-center gap-8 mb-8">
+                                    <span class="fw-700" style="font-size:20px;">2/4</span>
+                                    <span class="text-sm text-muted">50%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-bar-fill green" style="width:50%"></div>
+                                </div>
+                                <div class="mt-8 text-sm">
+                                    <span class="text-success">✅ พบ: 2</span> &nbsp;
+                                    <span class="text-danger">❌ ไม่อยู่: 0</span>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="text-sm text-muted mb-4">📖 งานทั่วไป</div>
+                                <div class="flex items-center gap-8 mb-8">
+                                    <span class="fw-700" style="font-size:20px;">0/2</span>
+                                    <span class="text-sm text-muted">0%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-bar-fill blue" style="width:0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

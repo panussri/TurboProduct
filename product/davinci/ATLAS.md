@@ -1,9 +1,9 @@
 # ATLAS - Product Capabilities & Strategic Blueprint
 
 **Role**: `@ARCHITECT`
-**Purpose**: This document defines the **Capabilities ("What")** of the Genesis Service — the centralized Customer & Product Master Data platform for the enterprise.
+**Purpose**: This document defines the **Capabilities ("What")** of the DaVinci Service — the centralized Customer & Product Master Data platform for the enterprise.
 
-**Codename**: Genesis (ジェネシス)
+**Codename**: DaVinci (ダヴィンチ)
 **Status**: 📝 Draft
 
 ---
@@ -23,13 +23,13 @@ The company operates **multiple business lines** (Lending, Insurance via multipl
 ### Key Features
 
 *   **Golden Record**: A single, deduplicated customer profile aggregating identity from all source systems.
-    *   **Unique Identifier**: A system-generated `genesis_customer_id` that becomes the canonical customer key across all downstream systems.
+    *   **Unique Identifier**: A system-generated `davinci_customer_id` that becomes the canonical customer key across all downstream systems.
     *   **Identity Core**: Name (TH/EN), Date of Birth, National ID (encrypted), Passport, Tax ID.
     *   **Contact Profile**: Phone numbers (ranked primary/secondary), Email, Physical addresses (with type: home, work, mailing).
     *   **KYC / AML Status**: Current verification status, last verification date, source system of verification.
 *   **Product Linkage (Summary, Not Detail)**:
-    *   Genesis does **not** store full loan agreements or insurance policies. Those live in their respective transactional systems (Core Banking / LOS, Policy Admin).
-    *   Genesis stores **product summary records** linked to the customer:
+    *   DaVinci does **not** store full loan agreements or insurance policies. Those live in their respective transactional systems (Core Banking / LOS, Policy Admin).
+    *   DaVinci stores **product summary records** linked to the customer:
         *   Loan: Account number, product type, current balance, status (active/closed/delinquent), originating subsidiary.
         *   Insurance: Policy number, product type, premium status, status (active/lapsed/cancelled), originating subsidiary.
     *   These summaries are kept current via **event consumption** (see Capability 3).
@@ -57,11 +57,11 @@ This is **not** role-based security (e.g., "Loan Officers can't see Insurance da
     *   **Symmetric vs. Directed**: Consent is **directed** (A→H ≠ H→A). Each direction requires separate consent.
     *   **Revocation**: Consent can be revoked. Upon revocation, visibility is immediately restricted. Existing data is not deleted but becomes inaccessible to the non-consented entity.
 *   **Consent Audit Trail**: All consent grants, revocations, and access attempts are logged immutably.
-*   **API Enforcement**: All Genesis APIs filter results based on the requesting user's subsidiary and the applicable consent records. There is no "see everything" bypass outside of a designated compliance/audit role.
+*   **API Enforcement**: All DaVinci APIs filter results based on the requesting user's subsidiary and the applicable consent records. There is no "see everything" bypass outside of a designated compliance/audit role.
 
 ### Regulatory Context
 
-| Regulation | Requirement | Genesis Response |
+| Regulation | Requirement | DaVinci Response |
 |------------|-------------|------------------|
 | PDPA (Thailand) | Cross-entity data sharing requires explicit consent | Consent Registry + Visibility Rules |
 | Debt Collection Act (Thailand) | Max contact frequency per day per debtor | Combined product view enables contact frequency tracking across all products |
@@ -71,22 +71,22 @@ This is **not** role-based security (e.g., "Loan Officers can't see Insurance da
 
 ## 3. Core Capability: Event-Driven Data Synchronization
 
-**Goal**: Keep Genesis current with upstream transactional systems by consuming domain events, making it the **single point of query** for all downstream services needing customer or product summary data.
+**Goal**: Keep DaVinci current with upstream transactional systems by consuming domain events, making it the **single point of query** for all downstream services needing customer or product summary data.
 
 ### Why It Exists (First Principles)
 
-Genesis is **not** the system of record for loans or insurance policies — Core Banking and Policy Admin systems are. However, **downstream consumers** (branch dashboards, collection systems, risk analytics, reporting) should not query multiple source systems. Genesis acts as the **materialized read model** — a centralized, pre-joined, always-current view.
+DaVinci is **not** the system of record for loans or insurance policies — Core Banking and Policy Admin systems are. However, **downstream consumers** (branch dashboards, collection systems, risk analytics, reporting) should not query multiple source systems. DaVinci acts as the **materialized read model** — a centralized, pre-joined, always-current view.
 
 ### Key Features
 
-*   **Event Consumption**: Genesis subscribes to domain events from upstream systems:
+*   **Event Consumption**: DaVinci subscribes to domain events from upstream systems:
     *   **Core Banking**: `LoanDisbursed`, `LoanPaymentReceived`, `LoanStatusChanged`, `LoanBalanceUpdated`, `LoanClosed`.
     *   **Policy Admin**: `PolicyIssued`, `PremiumPaid`, `PolicyLapsed`, `PolicyCancelled`, `PolicyRenewed`.
     *   **KYC Service / Matcha**: `CustomerVerified`, `CustomerKYCExpired`.
     *   **Onigiri (LOS)**: `ApplicationCreated`, `ApplicationApproved`, `CustomerProfileUpdated`.
 *   **Idempotent Processing**: All event handlers are idempotent (keyed on event ID + version). Duplicate or out-of-order events are handled gracefully.
-*   **Event Schema Registry**: Upstream systems publish events conforming to a shared schema contract. Genesis validates incoming events against the registry.
-*   **Downstream Query API**: Other services query Genesis (not the source systems) for:
+*   **Event Schema Registry**: Upstream systems publish events conforming to a shared schema contract. DaVinci validates incoming events against the registry.
+*   **Downstream Query API**: Other services query DaVinci (not the source systems) for:
     *   Customer profile lookup (by ID, phone, name).
     *   Product summary by customer (all loans, all policies — filtered by consent).
     *   Contact history and frequency (for collection compliance).
@@ -98,7 +98,7 @@ Genesis is **not** the system of record for loans or insurance policies — Core
    │ Core Banking│ ──────────► │               │ ◄──────────── │ Branch Dashboard │
    └─────────────┘             │               │               └─────────────────┘
                                │               │
-   ┌─────────────┐   Events    │    GENESIS    │   Query API   ┌─────────────────┐
+   ┌─────────────┐   Events    │    DAVINCI    │   Query API   ┌─────────────────┐
    │ Policy Admin│ ──────────► │  (Golden      │ ◄──────────── │ Collection Sys   │
    └─────────────┘             │   Record +    │               └─────────────────┘
                                │   Product     │
@@ -135,11 +135,11 @@ Customer data changes (address updates, phone number corrections, name changes a
     *   Low-risk changes (e.g., update secondary phone) → auto-approved.
     *   High-risk changes (e.g., National ID correction, address change) → requires reviewer approval.
     *   Merge requests → always require approval + supporting evidence.
-*   **Change Propagation**: Upon approval, Genesis:
+*   **Change Propagation**: Upon approval, DaVinci:
     *   Updates the Golden Record.
     *   Publishes a `CustomerProfileChanged` event for downstream systems to consume.
     *   Logs the change in the immutable audit trail.
-*   **Duplicate Detection**: On new customer creation or change requests, Genesis runs matching rules (name + DOB + ID number fuzzy match) to flag potential duplicates before creation.
+*   **Duplicate Detection**: On new customer creation or change requests, DaVinci runs matching rules (name + DOB + ID number fuzzy match) to flag potential duplicates before creation.
 
 ---
 
@@ -149,10 +149,10 @@ Customer data changes (address updates, phone number corrections, name changes a
 
 ### Key Features
 
-*   **Unified Contact Log**: All collection contacts (call, SMS, visit) across all products for a customer are logged in Genesis.
-*   **Frequency Check API**: Before initiating contact, the collection system queries Genesis: *"How many times has this customer been contacted today across all products?"*
-*   **Block Signal**: If the daily limit is reached, Genesis returns a block signal. The collection system must respect this.
-*   **Cross-Product Coordination**: Because Genesis knows all active delinquent products for a customer, it can inform the collection system: *"This customer has 2 delinquent loans and 1 lapsed insurance policy — coordinate your contact."*
+*   **Unified Contact Log**: All collection contacts (call, SMS, visit) across all products for a customer are logged in DaVinci.
+*   **Frequency Check API**: Before initiating contact, the collection system queries DaVinci: *"How many times has this customer been contacted today across all products?"*
+*   **Block Signal**: If the daily limit is reached, DaVinci returns a block signal. The collection system must respect this.
+*   **Cross-Product Coordination**: Because DaVinci knows all active delinquent products for a customer, it can inform the collection system: *"This customer has 2 delinquent loans and 1 lapsed insurance policy — coordinate your contact."*
 
 ---
 
@@ -160,9 +160,9 @@ Customer data changes (address updates, phone number corrections, name changes a
 
 | # | Decision | Context | Consequence |
 |---|----------|---------|-------------|
-| D1 | **Centralized read model, not system of record** | Genesis consumes events from source systems (Core Banking, Policy Admin). It does not own loan or policy lifecycle. | Simpler ownership boundaries. Genesis never conflicts with source systems. Trade-off: eventual consistency (acceptable for read-model use cases). |
+| D1 | **Centralized read model, not system of record** | DaVinci consumes events from source systems (Core Banking, Policy Admin). It does not own loan or policy lifecycle. | Simpler ownership boundaries. DaVinci never conflicts with source systems. Trade-off: eventual consistency (acceptable for read-model use cases). |
 | D2 | **Consent-based visibility, not role-based** | Security requirement is driven by PDPA cross-entity consent, not by job function. A loan officer from Subsidiary H can see insurance data IF customer consented. | More granular than RBAC. Requires consent registry as a first-class entity. More complex query layer but legally correct. |
 | D3 | **Directed consent model** | Consent from A→H does not imply H→A. | Each direction must be explicitly granted. More consent records to manage, but legally precise. |
 | D4 | **Event-driven sync (not ETL batch)** | Near-real-time currency is needed for collection compliance (contact frequency) and branch operations. | Requires event infrastructure (SQS/SNS or Kafka). More complex than nightly ETL but meets SLA. |
 | D5 | **Change requests, not direct edits** | High-risk fields (National ID, address) need governance. | Adds friction for branch users but prevents data quality issues. Low-risk changes can be auto-approved to minimize friction. |
-| D6 | **Product name: Genesis** | Foundational data layer — everything else builds on top of it. | Clear metaphor. Aligns with Japanese-themed naming convention (ジェネシス). |
+| D6 | **Product name: DaVinci** | Centralized master data layer — the Renaissance polymath who unified art, science, and engineering. | Clear metaphor for unifying all data domains. |

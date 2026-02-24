@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SENSEI — แดชบอร์ดหัวหน้า</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="app-layout">
+        <nav class="sidebar">
+            <div class="sidebar-logo">S</div>
+            <div class="sidebar-nav">
+                <a href="customer-list.html" title="ลูกค้า">👥</a>
+                <a href="work-queue.html" title="คิวงาน">📋</a>
+                <a href="supervisor.html" class="active" title="แดชบอร์ด">📊</a>
+                <a href="performance.html" title="ผลงาน">🏆</a>
+            </div>
+            <div class="sidebar-divider"></div>
+            <div class="sidebar-nav">
+                <a href="#" title="ตั้งค่า">⚙️</a>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <header class="top-header">
+                <div class="top-header-left">
+                    <div class="top-header-title">SENSEI</div>
+                    <div class="top-header-breadcrumb">
+                        <span>สาขารัชดา</span> / <span style="color:var(--color-text-primary)">แดชบอร์ดหัวหน้า</span>
+                    </div>
+                </div>
+                <div class="top-header-right">
+                    <span style="font-size:13px;color:var(--color-text-secondary)">คุณแนท หัวหน้าสาขา</span>
+                    <div class="user-avatar">น</div>
+                </div>
+            </header>
+
+            <div class="page-content">
+                <!-- KPI Row -->
+                <div class="kpi-row">
+                    <div class="kpi-card accent">
+                        <div class="kpi-label">📋 คิวรวมทีม</div>
+                        <div class="kpi-value">312</div>
+                        <div class="kpi-sub">งานทั้งหมดวันนี้</div>
+                    </div>
+                    <div class="kpi-card success">
+                        <div class="kpi-label">✅ เสร็จแล้ว</div>
+                        <div class="kpi-value" style="color:var(--color-success)">187</div>
+                        <div class="kpi-sub">60% ของวันนี้</div>
+                    </div>
+                    <div class="kpi-card danger">
+                        <div class="kpi-label">🔴 ค้างดำเนินการ</div>
+                        <div class="kpi-value" style="color:var(--color-danger)">23</div>
+                        <div class="kpi-sub">ต้องดำเนินการ</div>
+                    </div>
+                    <div class="kpi-card warning">
+                        <div class="kpi-label">💰 PTP วันนี้</div>
+                        <div class="kpi-value">฿1.2M</div>
+                        <div class="kpi-sub">จาก 28 สัญญา</div>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <!-- LEFT: Team Table -->
+                    <div class="card full-width">
+                        <div class="card-header">
+                            <div class="card-title">👥 สถานะทีมวันนี้</div>
+                            <span class="text-sm text-muted">12 คน</span>
+                        </div>
+                        <div style="overflow-x:auto;">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>พนักงาน</th>
+                                        <th class="text-center">คิว</th>
+                                        <th class="text-center">เสร็จ</th>
+                                        <th class="text-center">อัตรา</th>
+                                        <th class="text-right">PTP (฿)</th>
+                                        <th>⚠️</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <div style="display:flex;align-items:center;gap:8px;">
+                                                <div
+                                                    style="width:28px;height:28px;border-radius:50%;background:#DCFCE7;color:#15803D;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:11px;">
+                                                    พ</div>
+                                                <span class="fw-600">พลอย</span>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">28</td>
+                                        <td class="text-center fw-600" style="color:var(--color-success)">19</td>
+                                        <td class="text-center"><span class="tag tag-green">68%</span></td>
+                                        <td class="text-right fw-600">185,000</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div style="display:flex;align-items:center;gap:8px;">
+                                                <div
+                                                    style="width:28px;height:28px;border-radius:50%;background:#DBEAFE;color:#3B82F6;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:11px;">
+                                                    ข</div>
+                                                <span class="fw-600">ขวัญ</span>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">30</td>
+                                        <td class="text-center fw-600" style="color:var(--color-success)">22</td>
+                                        <td class="text-center"><span class="tag tag-green">73%</span></td>
+                                        <td class="text-right fw-600">210,000</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div style="display:flex;align-items:center;gap:8px;">
+                                                <div
+                                                    style="width:28px;height:28px;border-radius:50%;background:#EDE9FE;color:#7C3AED;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:11px;">
+                                                    น</div>
+                                                <span class="fw-600">นัท</span>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">25</td>
+                                        <td class="text-center fw-600" style="color:var(--color-success)">18</td>
+                                        <td class="text-center"><span class="tag tag-green">72%</span></td>
+                                        <td class="text-right fw-600">95,000</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr style="background:#FEE2E2;">
+                                        <td>
+                                            <div style="display:flex;align-items:center;gap:8px;">
+                                                <div
+                                                    style="width:28px;height:28px;border-radius:50%;background:#FEE2E2;color:#EF4444;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:11px;">
+                                                    ส</div>
+                                                <span class="fw-600">สมชาย</span>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">32</td>
+                                        <td class="text-center fw-600" style="color:var(--color-danger)">8</td>
+                                        <td class="text-center"><span class="tag tag-red">25%</span></td>
+                                        <td class="text-right fw-600">15,000</td>
+                                        <td><span class="tag tag-red" style="font-size:11px;">⚠️ ผลงานต่ำ</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div style="display:flex;align-items:center;gap:8px;">
+                                                <div
+                                                    style="width:28px;height:28px;border-radius:50%;background:#FEF9C3;color:#B45309;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:11px;">
+                                                    ม</div>
+                                                <span class="fw-600">มานะ</span>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">26</td>
+                                        <td class="text-center fw-600" style="color:var(--color-success)">16</td>
+                                        <td class="text-center"><span class="tag tag-green">62%</span></td>
+                                        <td class="text-right fw-600">78,000</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div style="display:flex;align-items:center;gap:8px;">
+                                                <div
+                                                    style="width:28px;height:28px;border-radius:50%;background:#DCFCE7;color:#15803D;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:11px;">
+                                                    ว</div>
+                                                <span class="fw-600">วรรณ</span>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">24</td>
+                                        <td class="text-center fw-600" style="color:var(--color-success)">17</td>
+                                        <td class="text-center"><span class="tag tag-green">71%</span></td>
+                                        <td class="text-right fw-600">120,000</td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Playbooks -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">📚 Playbooks ที่ใช้งาน</div>
+                            <a href="playbook-editor.html" class="btn btn-outline btn-sm">+ สร้าง Playbook</a>
+                        </div>
+                        <div class="card-body">
+                            <div class="playbook-card">
+                                <div class="playbook-header">
+                                    <div class="playbook-name">
+                                        🔴 ติดตามหนี้ค้างชำระ
+                                    </div>
+                                    <div style="display:flex;gap:6px;align-items:center;">
+                                        <span class="tag tag-orange">23 เคส</span>
+                                        <a href="playbook-editor.html" class="btn btn-outline btn-sm"
+                                            style="font-size:11px;padding:2px 8px;">แก้ไข</a>
+                                    </div>
+                                </div>
+                                <div class="playbook-stats">
+                                    <div class="stat">ตามเป้า: <strong>14</strong></div>
+                                    <div class="stat" style="color:var(--color-warning)">เสี่ยง: <strong>6</strong>
+                                    </div>
+                                    <div class="stat" style="color:var(--color-danger)">ล้มเหลว: <strong>1</strong>
+                                    </div>
+                                    <div class="stat" style="color:var(--color-success)">สำเร็จ: <strong>2</strong>
+                                    </div>
+                                </div>
+                                <div class="progress-bar mt-8">
+                                    <div class="progress-bar-fill orange" style="width:60%"></div>
+                                </div>
+                            </div>
+
+                            <div class="playbook-card">
+                                <div class="playbook-header">
+                                    <div class="playbook-name">
+                                        🔵 ต่อประกันภัย (ก.พ.)
+                                    </div>
+                                    <div style="display:flex;gap:6px;align-items:center;">
+                                        <span class="tag tag-blue">18 เคส</span>
+                                        <a href="playbook-editor.html" class="btn btn-outline btn-sm"
+                                            style="font-size:11px;padding:2px 8px;">แก้ไข</a>
+                                    </div>
+                                </div>
+                                <div class="playbook-stats">
+                                    <div class="stat">ตามเป้า: <strong>12</strong></div>
+                                    <div class="stat" style="color:var(--color-warning)">เสี่ยง: <strong>4</strong>
+                                    </div>
+                                    <div class="stat" style="color:var(--color-success)">สำเร็จ: <strong>2</strong>
+                                    </div>
+                                </div>
+                                <div class="progress-bar mt-8">
+                                    <div class="progress-bar-fill blue" style="width:67%"></div>
+                                </div>
+                            </div>
+
+                            <div class="playbook-card">
+                                <div class="playbook-header">
+                                    <div class="playbook-name">
+                                        🟢 KYC ตรวจสอบใหม่
+                                    </div>
+                                    <div style="display:flex;gap:6px;align-items:center;">
+                                        <span class="tag tag-green">8 เคส</span>
+                                        <a href="playbook-editor.html" class="btn btn-outline btn-sm"
+                                            style="font-size:11px;padding:2px 8px;">แก้ไข</a>
+                                    </div>
+                                </div>
+                                <div class="playbook-stats">
+                                    <div class="stat">ตามเป้า: <strong>7</strong></div>
+                                    <div class="stat" style="color:var(--color-warning)">เสี่ยง: <strong>1</strong>
+                                    </div>
+                                </div>
+                                <div class="progress-bar mt-8">
+                                    <div class="progress-bar-fill green" style="width:88%"></div>
+                                </div>
+                            </div>
+
+                            <div class="playbook-card">
+                                <div class="playbook-header">
+                                    <div class="playbook-name">
+                                        📢 ยืนยันนโยบาย v2.3
+                                    </div>
+                                    <div style="display:flex;gap:6px;align-items:center;">
+                                        <span class="tag tag-purple">12 คน</span>
+                                        <a href="playbook-editor.html" class="btn btn-outline btn-sm"
+                                            style="font-size:11px;padding:2px 8px;">แก้ไข</a>
+                                    </div>
+                                </div>
+                                <div class="playbook-stats">
+                                    <div class="stat" style="color:var(--color-success)">ยืนยันแล้ว: <strong>9</strong>
+                                    </div>
+                                    <div class="stat">รอ: <strong>3</strong></div>
+                                </div>
+                                <div class="progress-bar mt-8">
+                                    <div class="progress-bar-fill green" style="width:75%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Exceptions -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">⚠️ ต้องดำเนินการ</div>
+                            <span class="badge badge-red">5</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="exception-item">
+                                <div class="exception-icon" style="background:#FEE2E2;color:#EF4444;">⚠️</div>
+                                <div class="exception-content">
+                                    <div class="exception-title">สมชาย — ไม่มีกิจกรรมตั้งแต่ 10:00 น.</div>
+                                    <div class="exception-desc">24 งานค้าง, ไม่มีบันทึกเพิ่มเติม</div>
+                                </div>
+                                <button class="btn btn-outline btn-sm">ดู</button>
+                            </div>
+                            <div class="exception-item">
+                                <div class="exception-icon" style="background:#FEF9C3;color:#B45309;">🔔</div>
+                                <div class="exception-content">
+                                    <div class="exception-title">5 ลูกค้าถูกบล็อกเนื่องจากติดต่อครบจำนวน</div>
+                                    <div class="exception-desc">ติดต่อครบ 2/2 ครั้งวันนี้แล้ว</div>
+                                </div>
+                                <button class="btn btn-outline btn-sm">ดู</button>
+                            </div>
+                            <div class="exception-item">
+                                <div class="exception-icon" style="background:#DBEAFE;color:#3B82F6;">📋</div>
+                                <div class="exception-content">
+                                    <div class="exception-title">2 Playbook ติดที่ขั้นตอน "ส่งรายงาน"</div>
+                                    <div class="exception-desc">รอการอนุมัติจากหัวหน้า</div>
+                                </div>
+                                <button class="btn btn-primary btn-sm">อนุมัติ</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Daily Scorecard -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">📊 สรุปผลประจำวัน</div>
+                        </div>
+                        <div class="card-body">
+                            <table class="data-table" style="font-size:13px;">
+                                <thead>
+                                    <tr>
+                                        <th>ตัวชี้วัด</th>
+                                        <th class="text-right">วันนี้</th>
+                                        <th class="text-right">สัปดาห์นี้</th>
+                                        <th class="text-right">เดือนนี้</th>
+                                        <th class="text-right">เป้า</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>งานเสร็จทั้งหมด</td>
+                                        <td class="text-right fw-600">187</td>
+                                        <td class="text-right">820</td>
+                                        <td class="text-right">3,450</td>
+                                        <td class="text-right text-muted">3,600</td>
+                                    </tr>
+                                    <tr>
+                                        <td>PTP ได้</td>
+                                        <td class="text-right fw-600">28</td>
+                                        <td class="text-right">125</td>
+                                        <td class="text-right">490</td>
+                                        <td class="text-right text-muted">540</td>
+                                    </tr>
+                                    <tr>
+                                        <td>ลงพื้นที่สำเร็จ</td>
+                                        <td class="text-right fw-600">12</td>
+                                        <td class="text-right">48</td>
+                                        <td class="text-right">210</td>
+                                        <td class="text-right text-muted">240</td>
+                                    </tr>
+                                    <tr>
+                                        <td>ต่อประกันสำเร็จ</td>
+                                        <td class="text-right fw-600">2</td>
+                                        <td class="text-right">12</td>
+                                        <td class="text-right">45</td>
+                                        <td class="text-right text-muted">60</td>
+                                    </tr>
+                                    <tr>
+                                        <td>งานค้าง</td>
+                                        <td class="text-right fw-600 text-danger">23</td>
+                                        <td class="text-right">—</td>
+                                        <td class="text-right">—</td>
+                                        <td class="text-right text-muted">0</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Contact Compliance</td>
+                                        <td class="text-right"><span class="tag tag-green">✅ 100%</span></td>
+                                        <td class="text-right"><span class="tag tag-green">✅ 100%</span></td>
+                                        <td class="text-right"><span class="tag tag-green">✅ 100%</span></td>
+                                        <td class="text-right text-muted">100%</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>
