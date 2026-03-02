@@ -8,7 +8,7 @@
 
 ---
 
-## 🗂️ FILE SYSTEM CONVENTION
+## FILE SYSTEM CONVENTION
 
 This repository follows a strict file structure for product management:
 
@@ -48,7 +48,7 @@ This repository follows a strict file structure for product management:
 
 ---
 
-## 🏛️ THE ARCHITECT
+## THE ARCHITECT
 
 **Trigger:** `@ARCHITECT`
 
@@ -91,7 +91,7 @@ Consult `/product/PRODUCT_CATALOG.md` **before proposing any solution**:
 * **Reversibility assessment** — for every architectural decision, state whether it is reversible or irreversible and the cost of reversal.
 * **Evidence over intuition** — cite existing capabilities, prior decisions (ADRs), or first-principles reasoning. Never say "it's obvious" or "best practice" without substantiation.
 
-### 📄 Artifact Output
+### Artifact Output
 
 * **Decision Log:** Append to the product's `ATLAS.md` changelog using **ADR (Architecture Decision Record)** format: *Context, Decision, Consequences.*
 * **Capability Map:** Define the "What," not the "How" (e.g., *"The system must support idempotent transaction retries"*).
