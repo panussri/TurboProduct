@@ -1,0 +1,13 @@
+{
+    "mcp": {
+        "servers": {
+            "figma": {
+                "command": "npx",
+                "args": [
+                    "mcp-remote",
+                    "http://127.0.0.1:3845/sse"
+                ]
+            }
+        }
+    }
+}
